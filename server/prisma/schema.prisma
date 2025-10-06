@@ -1,0 +1,151 @@
+// Prisma schema for Mycelium
+// Легко изменяемая схема БД - меняй и запускай: npm run db:migrate
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USERS AND AUTHENTICATION
+// ============================================
+
+model User {
+  id            String   @id @default(uuid())
+  telegramId    BigInt   @unique @map("telegram_id")
+  username      String?
+  firstName     String?  @map("first_name")
+  lastName      String?  @map("last_name")
+  photoUrl      String?  @map("photo_url")
+
+  // Gamification
+  mycTokens     Int      @default(0) @map("myc_tokens")
+  level         Int      @default(1)
+  levelProgress Float    @default(0) @map("level_progress")
+  streakDays    Int      @default(0) @map("streak_days")
+  lastActiveAt  DateTime @default(now()) @map("last_active_at")
+
+  // Timestamps
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  testResults   TestResult[]
+  metaskills    Metaskill[]
+  p2pCallsUser1 P2PCall[] @relation("User1Calls")
+  p2pCallsUser2 P2PCall[] @relation("User2Calls")
+  achievements  Achievement[]
+  aiFeedback    AIFeedback[]
+
+  @@map("users")
+}
+
+// ============================================
+// TESTS AND RESULTS
+// ============================================
+
+model TestResult {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  testType    String   @map("test_type") // 'mbti', 'bigfive', 'enneagram', etc
+  result      Json     // Детальные результаты теста
+  tokensEarned Int     @default(0) @map("tokens_earned")
+
+  completedAt DateTime @default(now()) @map("completed_at")
+
+  @@index([userId])
+  @@index([testType])
+  @@map("test_results")
+}
+
+// ============================================
+// METASKILLS PROGRESS
+// ============================================
+
+model Metaskill {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  domain    String   // 'cognitive', 'social', 'emotional', 'practical'
+  skill     String   // конкретный навык из 16
+  score     Float    @default(0.5) // 0.0 - 1.0
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, domain, skill])
+  @@index([userId])
+  @@map("metaskills")
+}
+
+// ============================================
+// P2P CALLS
+// ============================================
+
+model P2PCall {
+  id              String   @id @default(uuid())
+
+  user1Id         String   @map("user1_id")
+  user1           User     @relation("User1Calls", fields: [user1Id], references: [id], onDelete: Cascade)
+
+  user2Id         String   @map("user2_id")
+  user2           User     @relation("User2Calls", fields: [user2Id], references: [id], onDelete: Cascade)
+
+  durationSeconds Int?     @map("duration_seconds")
+  ratingUser1     Int?     @map("rating_user1") // 1-5
+  ratingUser2     Int?     @map("rating_user2") // 1-5
+  notes           String?  @db.Text
+
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([user1Id])
+  @@index([user2Id])
+  @@map("p2p_calls")
+}
+
+// ============================================
+// ACHIEVEMENTS
+// ============================================
+
+model Achievement {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  achievementType String   @map("achievement_type") // 'first_test', 'streak_7', 'level_10', etc
+  title           String
+  description     String?  @db.Text
+  iconEmoji       String?  @map("icon_emoji")
+  tokensReward    Int      @default(0) @map("tokens_reward")
+
+  earnedAt        DateTime @default(now()) @map("earned_at")
+
+  @@index([userId])
+  @@map("achievements")
+}
+
+// ============================================
+// AI FEEDBACK
+// ============================================
+
+model AIFeedback {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  feedbackType String   @map("feedback_type") // 'test_result', 'call_summary', 'weekly_report', etc
+  content      String   @db.Text
+  metadata     Json?    // Дополнительные данные
+
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([feedbackType])
+  @@map("ai_feedback")
+}

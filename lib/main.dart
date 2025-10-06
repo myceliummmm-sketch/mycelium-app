@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 import 'screens/onboarding_screen.dart';
+import 'providers/auth_provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print('⚠️ Failed to load .env file: $e');
+  }
 
   // Set status bar to transparent
   SystemChrome.setSystemUIOverlayStyle(
@@ -22,12 +32,16 @@ class MyceliumApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mycelium',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
-      // Show onboarding on first launch (can add SharedPreferences check later)
-      home: const OnboardingScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()..initialize()),
+      ],
+      child: MaterialApp(
+        title: 'Mycelium',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.dark,
+        home: const OnboardingScreen(),
+      ),
     );
   }
 }
