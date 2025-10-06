@@ -49,3 +49,7 @@ server/node_modules/
 server/dist/
 server/.env
 .env
+
+# Deployment configs (temporary)
+render-service.json
+DEPLOYMENT_GUIDE.md
