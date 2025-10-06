@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'theme/app_theme.dart';
-import 'widgets/bottom_navigation.dart';
+import 'screens/onboarding_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,8 @@ class MyceliumApp extends StatelessWidget {
       title: 'Mycelium',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-      home: const MainNavigator(),
+      // Show onboarding on first launch (can add SharedPreferences check later)
+      home: const OnboardingScreen(),
     );
   }
 }

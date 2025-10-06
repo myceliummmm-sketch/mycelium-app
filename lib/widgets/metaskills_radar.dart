@@ -1,5 +1,5 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../theme/app_theme.dart';
 import '../models/metaskill.dart';
 
@@ -33,8 +33,52 @@ class MetaskillsRadar extends StatelessWidget {
             child: SizedBox(
               width: 280,
               height: 280,
-              child: CustomPaint(
-                painter: RadarChartPainter(domainScores),
+              child: RadarChart(
+                RadarChartData(
+                  radarTouchData: RadarTouchData(enabled: true),
+                  dataSets: [
+                    RadarDataSet(
+                      fillColor: AppColors.primaryPurple.withOpacity(0.2),
+                      borderColor: AppColors.primaryPurple,
+                      borderWidth: 2,
+                      dataEntries: MetaskillDomain.values.map((domain) {
+                        return RadarEntry(value: (domainScores[domain] ?? 0.5) * 100);
+                      }).toList(),
+                    ),
+                  ],
+                  radarBackgroundColor: Colors.transparent,
+                  radarBorderData: BorderSide(
+                    color: AppColors.textSecondary.withOpacity(0.2),
+                    width: 1,
+                  ),
+                  titlePositionPercentageOffset: 0.15,
+                  titleTextStyle: const TextStyle(
+                    fontSize: 24,
+                    color: Colors.white,
+                  ),
+                  getTitle: (index, angle) {
+                    final domain = MetaskillDomain.values[index];
+                    return RadarChartTitle(
+                      text: domain.emoji,
+                      angle: 0,
+                    );
+                  },
+                  tickCount: 4,
+                  ticksTextStyle: const TextStyle(
+                    color: Colors.transparent,
+                    fontSize: 0,
+                  ),
+                  tickBorderData: BorderSide(
+                    color: AppColors.textSecondary.withOpacity(0.1),
+                    width: 1,
+                  ),
+                  gridBorderData: BorderSide(
+                    color: AppColors.textSecondary.withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+                swapAnimationDuration: const Duration(milliseconds: 800),
+                swapAnimationCurve: Curves.easeInOutCubic,
               ),
             ),
           ),
@@ -106,160 +150,4 @@ class MetaskillsRadar extends StatelessWidget {
         return AppColors.success;
     }
   }
-}
-
-class RadarChartPainter extends CustomPainter {
-  final Map<MetaskillDomain, double> domainScores;
-
-  RadarChartPainter(this.domainScores);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 20;
-    final domains = MetaskillDomain.values;
-
-    // Draw background circles
-    _drawBackgroundCircles(canvas, center, radius);
-
-    // Draw axes
-    _drawAxes(canvas, center, radius, domains);
-
-    // Draw data polygon
-    _drawDataPolygon(canvas, center, radius, domains);
-
-    // Draw labels
-    _drawLabels(canvas, center, radius, domains);
-  }
-
-  void _drawBackgroundCircles(Canvas canvas, Offset center, double radius) {
-    final paint = Paint()
-      ..color = AppColors.textSecondary.withOpacity(0.1)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
-    for (int i = 1; i <= 4; i++) {
-      canvas.drawCircle(center, radius * (i / 4), paint);
-    }
-  }
-
-  void _drawAxes(
-      Canvas canvas, Offset center, double radius, List<MetaskillDomain> domains) {
-    final paint = Paint()
-      ..color = AppColors.textSecondary.withOpacity(0.2)
-      ..strokeWidth = 1;
-
-    for (int i = 0; i < domains.length; i++) {
-      final angle = (i * 2 * math.pi / domains.length) - math.pi / 2;
-      final end = Offset(
-        center.dx + radius * math.cos(angle),
-        center.dy + radius * math.sin(angle),
-      );
-      canvas.drawLine(center, end, paint);
-    }
-  }
-
-  void _drawDataPolygon(
-      Canvas canvas, Offset center, double radius, List<MetaskillDomain> domains) {
-    final path = Path();
-    final points = <Offset>[];
-
-    for (int i = 0; i < domains.length; i++) {
-      final score = domainScores[domains[i]] ?? 0.5;
-      final angle = (i * 2 * math.pi / domains.length) - math.pi / 2;
-      final distance = radius * score;
-
-      final point = Offset(
-        center.dx + distance * math.cos(angle),
-        center.dy + distance * math.sin(angle),
-      );
-      points.add(point);
-
-      if (i == 0) {
-        path.moveTo(point.dx, point.dy);
-      } else {
-        path.lineTo(point.dx, point.dy);
-      }
-    }
-    path.close();
-
-    // Fill
-    final fillPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          AppColors.primaryPurple.withOpacity(0.3),
-          AppColors.primaryBlue.withOpacity(0.2),
-        ],
-      ).createShader(Rect.fromCircle(center: center, radius: radius))
-      ..style = PaintingStyle.fill;
-    canvas.drawPath(path, fillPaint);
-
-    // Stroke
-    final strokePaint = Paint()
-      ..color = AppColors.primaryPurple
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-    canvas.drawPath(path, strokePaint);
-
-    // Draw points
-    for (int i = 0; i < points.length; i++) {
-      final pointPaint = Paint()
-        ..color = _getColorForDomainByIndex(i)
-        ..style = PaintingStyle.fill;
-      canvas.drawCircle(points[i], 5, pointPaint);
-
-      // White border
-      final borderPaint = Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
-      canvas.drawCircle(points[i], 5, borderPaint);
-    }
-  }
-
-  void _drawLabels(
-      Canvas canvas, Offset center, double radius, List<MetaskillDomain> domains) {
-    for (int i = 0; i < domains.length; i++) {
-      final angle = (i * 2 * math.pi / domains.length) - math.pi / 2;
-      final labelRadius = radius + 30;
-
-      final labelPos = Offset(
-        center.dx + labelRadius * math.cos(angle),
-        center.dy + labelRadius * math.sin(angle),
-      );
-
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: domains[i].emoji,
-          style: const TextStyle(fontSize: 24),
-        ),
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
-      textPainter.paint(
-        canvas,
-        Offset(
-          labelPos.dx - textPainter.width / 2,
-          labelPos.dy - textPainter.height / 2,
-        ),
-      );
-    }
-  }
-
-  Color _getColorForDomainByIndex(int index) {
-    final domain = MetaskillDomain.values[index];
-    switch (domain) {
-      case MetaskillDomain.cognitive:
-        return AppColors.primaryPurple;
-      case MetaskillDomain.social:
-        return AppColors.primaryBlue;
-      case MetaskillDomain.emotional:
-        return AppColors.warning;
-      case MetaskillDomain.practical:
-        return AppColors.success;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

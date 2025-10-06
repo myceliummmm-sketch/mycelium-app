@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import '../theme/app_theme.dart';
 import '../models/user_model.dart';
 import '../models/metaskill.dart';
@@ -124,42 +125,75 @@ class HomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 30),
 
-                // Level progress
+                // Level progress with liquid effect
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: AppDecorations.cardBackground,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Уровень ${user.level}',
-                            style: AppTextStyles.h3,
-                          ),
-                          Text(
-                            '${(user.levelProgress * 100).toInt()}%',
-                            style: AppTextStyles.caption,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: LinearProgressIndicator(
+                      // Circular liquid progress
+                      SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: LiquidCircularProgressIndicator(
                           value: user.levelProgress,
-                          minHeight: 8,
                           backgroundColor: AppColors.textSecondary.withOpacity(0.2),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            AppColors.success,
+                          valueColor: AlwaysStoppedAnimation(AppColors.success),
+                          borderColor: AppColors.success,
+                          borderWidth: 3,
+                          direction: Axis.vertical,
+                          center: Text(
+                            '${user.level}',
+                            style: AppTextStyles.h2.copyWith(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '450 MYC до следующего уровня',
-                        style: AppTextStyles.caption,
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Уровень ${user.level}',
+                              style: AppTextStyles.h3,
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  '450 MYC до следующего уровня',
+                                  style: AppTextStyles.caption,
+                                ),
+                                Text(
+                                  '${(user.levelProgress * 100).toInt()}%',
+                                  style: AppTextStyles.caption.copyWith(
+                                    color: AppColors.success,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: SizedBox(
+                                height: 12,
+                                child: LiquidLinearProgressIndicator(
+                                  value: user.levelProgress,
+                                  backgroundColor: AppColors.textSecondary.withOpacity(0.2),
+                                  valueColor: AlwaysStoppedAnimation(AppColors.success),
+                                  borderRadius: 10,
+                                  direction: Axis.horizontal,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
