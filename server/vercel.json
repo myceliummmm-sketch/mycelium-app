@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/index.ts"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "DATABASE_URL": "postgresql://postgres:1Globusfrost2@db.qglmebqnyrauqcamhwio.supabase.co:5432/postgres",
+    "TELEGRAM_BOT_TOKEN": "7730788181:AAH6WcpygeX1HhmB-qTi1AzNx8odOVnjjlk",
+    "JWT_SECRET": "my-super-secret-jwt-key-2024",
+    "PORT": "3000"
+  }
+}
