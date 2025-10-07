@@ -53,3 +53,4 @@ server/.env
 # Deployment configs (temporary)
 render-service.json
 DEPLOYMENT_GUIDE.md
+.vercel

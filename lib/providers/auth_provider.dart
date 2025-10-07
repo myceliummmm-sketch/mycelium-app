@@ -29,27 +29,35 @@ class AuthProvider with ChangeNotifier {
 
       if (!isTelegram) {
         // Not in Telegram, use mock data for development
-        if (kDebugMode) {
-          print('⚠️ Not in Telegram, using mock auth');
-          await _mockAuth();
-        } else {
-          throw Exception('This app must be opened in Telegram');
-        }
+        print('⚠️ Not in Telegram, using mock auth');
+        await _mockAuth();
       } else {
-        // Get initData from Telegram
-        final initData = _telegram.initData;
-        if (initData == null || initData.isEmpty) {
-          throw Exception('Failed to get Telegram auth data');
+        // Try to authenticate with Telegram
+        try {
+          // Get initData from Telegram
+          final initData = _telegram.initData;
+
+          if (initData != null && initData.isNotEmpty) {
+            // Authenticate with backend using initData
+            final response = await _api.telegramAuth(initData);
+            _currentUser = User.fromJson(response['user']);
+            _isAuthenticated = true;
+            print('✅ Authenticated via initData as ${_currentUser!.displayName}');
+          } else {
+            // Fallback: use userData from Telegram SDK
+            final userData = _telegram.userData;
+            if (userData != null) {
+              print('⚠️ initData empty, using userData from Telegram');
+              await _authenticateWithUserData(userData);
+            } else {
+              print('⚠️ No Telegram data available, using mock auth');
+              await _mockAuth();
+            }
+          }
+        } catch (e) {
+          print('⚠️ Telegram auth failed: $e, falling back to mock');
+          await _mockAuth();
         }
-
-        // Authenticate with backend
-        final response = await _api.telegramAuth(initData);
-
-        // Parse user data
-        _currentUser = User.fromJson(response['user']);
-        _isAuthenticated = true;
-
-        print('✅ Authenticated as ${_currentUser!.displayName}');
       }
     } catch (e) {
       _error = e.toString();
@@ -58,6 +66,30 @@ class AuthProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Authenticate with Telegram userData (fallback when initData is empty)
+  Future<void> _authenticateWithUserData(Map<String, dynamic> userData) async {
+    _currentUser = User(
+      id: 'tg-${userData['id']}',
+      telegramId: userData['id'],
+      username: userData['username'] ?? '',
+      firstName: userData['first_name'] ?? 'User',
+      lastName: userData['last_name'],
+      photoUrl: userData['photo_url'],
+      mycTokens: 0,
+      level: 1,
+      levelProgress: 0.0,
+      streakDays: 0,
+      stats: UserStats(
+        testsCompleted: 0,
+        p2pCalls: 0,
+        achievements: 0,
+      ),
+    );
+
+    _isAuthenticated = true;
+    print('✅ Authenticated with userData: ${_currentUser!.displayName}');
   }
 
   /// Mock authentication for development

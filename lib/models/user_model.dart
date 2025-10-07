@@ -9,6 +9,8 @@ class User {
   final int level;
   final double levelProgress; // 0.0 to 1.0
   final int streakDays;
+  final int xp; // experience points
+  final double trustScore; // 0-100
   final List<MetaskillScore>? metaskills;
   final UserStats? stats;
 
@@ -23,6 +25,8 @@ class User {
     required this.level,
     required this.levelProgress,
     required this.streakDays,
+    this.xp = 0,
+    this.trustScore = 100.0,
     this.metaskills,
     this.stats,
   });
@@ -46,6 +50,8 @@ class User {
       level: json['level'] as int? ?? 1,
       levelProgress: (json['levelProgress'] as num?)?.toDouble() ?? 0.0,
       streakDays: json['streakDays'] as int? ?? 0,
+      xp: json['xp'] as int? ?? 0,
+      trustScore: (json['trustScore'] as num?)?.toDouble() ?? 100.0,
       metaskills: json['metaskills'] != null
           ? (json['metaskills'] as List)
               .map((m) => MetaskillScore.fromJson(m))
@@ -69,6 +75,8 @@ class User {
       'level': level,
       'levelProgress': levelProgress,
       'streakDays': streakDays,
+      'xp': xp,
+      'trustScore': trustScore,
       'metaskills': metaskills?.map((m) => m.toJson()).toList(),
       'stats': stats?.toJson(),
     };
@@ -85,6 +93,8 @@ class User {
     int? level,
     double? levelProgress,
     int? streakDays,
+    int? xp,
+    double? trustScore,
     List<MetaskillScore>? metaskills,
     UserStats? stats,
   }) {
@@ -99,6 +109,8 @@ class User {
       level: level ?? this.level,
       levelProgress: levelProgress ?? this.levelProgress,
       streakDays: streakDays ?? this.streakDays,
+      xp: xp ?? this.xp,
+      trustScore: trustScore ?? this.trustScore,
       metaskills: metaskills ?? this.metaskills,
       stats: stats ?? this.stats,
     );

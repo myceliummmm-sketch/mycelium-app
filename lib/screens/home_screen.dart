@@ -4,6 +4,7 @@ import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import '../theme/app_theme.dart';
 import '../models/user_model.dart';
 import '../models/metaskill.dart';
+import '../models/level_system.dart';
 import '../widgets/metaskills_radar.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -11,15 +12,26 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mock user data
+    // Mock user data with new fields
     final user = User(
-      name: 'Александр',
+      id: 'mock-user-id',
+      telegramId: 123456789,
+      firstName: 'Габил',
+      username: 'gabil',
       mycTokens: 1250,
-      streak: 12,
-      level: 5,
-      position: 27,
+      streakDays: 12,
+      level: 28,
       levelProgress: 0.65,
+      xp: 580,
+      trustScore: 87.5,
+      stats: UserStats(
+        testsCompleted: 12,
+        p2pCalls: 8,
+        achievements: 4,
+      ),
     );
+
+    final userLevel = UserLevel.fromXP(user.xp);
 
     return Scaffold(
       body: Container(
@@ -38,7 +50,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 // Header with greeting and balance
                 Text(
-                  'Привет, ${user.name}! 👋',
+                  'Привет, ${user.displayName}! 👋',
                   style: AppTextStyles.h1,
                 ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.2, end: 0),
 
@@ -82,7 +94,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${user.streak}',
+                              '${user.streakDays}',
                               style: AppTextStyles.h2.copyWith(fontSize: 20),
                             ),
                             const Text(

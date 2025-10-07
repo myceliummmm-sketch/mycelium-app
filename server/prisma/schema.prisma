@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -100,7 +100,7 @@ model P2PCall {
   durationSeconds Int?     @map("duration_seconds")
   ratingUser1     Int?     @map("rating_user1") // 1-5
   ratingUser2     Int?     @map("rating_user2") // 1-5
-  notes           String?  @db.Text
+  notes           String?
 
   createdAt       DateTime @default(now()) @map("created_at")
 
@@ -120,7 +120,7 @@ model Achievement {
 
   achievementType String   @map("achievement_type") // 'first_test', 'streak_7', 'level_10', etc
   title           String
-  description     String?  @db.Text
+  description     String?
   iconEmoji       String?  @map("icon_emoji")
   tokensReward    Int      @default(0) @map("tokens_reward")
 
@@ -140,7 +140,7 @@ model AIFeedback {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   feedbackType String   @map("feedback_type") // 'test_result', 'call_summary', 'weekly_report', etc
-  content      String   @db.Text
+  content      String
   metadata     Json?    // Дополнительные данные
 
   createdAt    DateTime @default(now()) @map("created_at")
