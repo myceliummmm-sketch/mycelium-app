@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'dart:math' as math;
 import '../theme/app_theme.dart';
+import '../config/app_version.dart';
 
 class CommunityScreen extends StatelessWidget {
   const CommunityScreen({super.key});
@@ -332,6 +333,19 @@ class CommunityScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 24),
+
+                // Version display
+                Center(
+                  child: Text(
+                    AppVersion.displayVersion,
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.textSecondary.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ).animate(delay: 400.ms).fadeIn(),
 
                 const SizedBox(height: 20),
               ],
