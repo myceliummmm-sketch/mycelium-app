@@ -26,6 +26,11 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Create missing asset directories and files
+        run: |
+          mkdir -p assets/lottie assets/images
+          touch .env
+
       - name: Install dependencies
         run: flutter pub get
 
