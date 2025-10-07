@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import '../theme/app_theme.dart';
 import '../models/user_model.dart';
-import '../models/metaskill.dart';
 import '../models/level_system.dart';
-import '../widgets/metaskills_radar.dart';
+import '../models/metaskill_detailed.dart';
+import '../models/achievement.dart';
+import '../models/life_sphere.dart';
+import '../widgets/metaskills_radar_16.dart';
+import '../widgets/metaskill_detail_modal.dart';
+import '../widgets/life_wheel_chart.dart';
+import '../widgets/achievement_detail_modal.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Mock user data with new fields
+    // Mock user data
     final user = User(
       id: 'mock-user-id',
       telegramId: 123456789,
@@ -32,6 +36,10 @@ class HomeScreen extends StatelessWidget {
     );
 
     final userLevel = UserLevel.fromXP(user.xp);
+    final all16Skills = MetaskillDetailed.getAll16Skills();
+    final achievements = Achievement.getInitialAchievements();
+    final unlockedAchievements = achievements.take(4).toList();
+    final lifeWheel = LifeWheelBalance.fromMockData();
 
     return Scaffold(
       body: Container(
@@ -48,75 +56,128 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header with greeting and balance
-                Text(
-                  'Привет, ${user.displayName}! 👋',
-                  style: AppTextStyles.h1,
-                ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.2, end: 0),
-
-                const SizedBox(height: 20),
-
-                // Balance and streak card
+                // Compact header card (MYC + Level + Trust Score)
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(16),
                   decoration: AppDecorations.gradientCard(
                     AppGradients.primaryGradient,
                   ),
                   child: Row(
                     children: [
+                      // MYC Tokens
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'MYC Токены',
+                              'MYC',
                               style: AppTextStyles.caption,
                             ),
-                            const SizedBox(height: 4),
                             Text(
                               '${user.mycTokens}',
-                              style: AppTextStyles.h1.copyWith(fontSize: 36),
+                              style: AppTextStyles.h2.copyWith(fontSize: 24),
                             ),
                           ],
                         ),
                       ),
+
+                      // Level
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Column(
+                        child: Row(
+                          children: [
+                            Text(
+                              userLevel.tier.emoji,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Ур. ${user.level}',
+                              style: AppTextStyles.body.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      // Trust Score
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            const Text(
+                              '🛡️',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '${user.trustScore.toInt()}',
+                              style: AppTextStyles.body.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      // Streak
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
                           children: [
                             const Text(
                               '🔥',
-                              style: TextStyle(fontSize: 24),
+                              style: TextStyle(fontSize: 20),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(width: 6),
                             Text(
                               '${user.streakDays}',
-                              style: AppTextStyles.h2.copyWith(fontSize: 20),
-                            ),
-                            const Text(
-                              'дней',
-                              style: AppTextStyles.caption,
+                              style: AppTextStyles.body.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.2, end: 0),
+                ).animate().fadeIn().slideY(begin: -0.2, end: 0),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 24),
 
-                // Today's tasks section
-                const Text(
-                  'Сегодня',
+                // Tasks section
+                Text(
+                  'Задания',
                   style: AppTextStyles.h2,
-                ).animate().fadeIn(delay: 200.ms),
+                ).animate(delay: 100.ms).fadeIn(),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 _buildTaskCard(
                   '✅ Пройти тест MBTI',
@@ -135,134 +196,127 @@ class HomeScreen extends StatelessWidget {
                   isRecommended: true,
                 ),
 
+                const SizedBox(height: 24),
+
+                // Achievements compact
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Достижения',
+                      style: AppTextStyles.h3,
+                    ),
+                    Text(
+                      '${unlockedAchievements.length}/${achievements.length}',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.warning,
+                      ),
+                    ),
+                  ],
+                ).animate(delay: 300.ms).fadeIn(),
+
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  height: 80,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: unlockedAchievements.length,
+                    itemBuilder: (context, index) {
+                      final achievement = unlockedAchievements[index];
+                      return GestureDetector(
+                        onTap: () => AchievementDetailModal.show(
+                          context,
+                          achievement.copyWith(isUnlocked: true),
+                        ),
+                        child: Container(
+                          width: 70,
+                          margin: const EdgeInsets.only(right: 12),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryPurple.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppColors.primaryPurple,
+                              width: 2,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                achievement.emoji,
+                                style: const TextStyle(fontSize: 28),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                achievement.title,
+                                style: AppTextStyles.caption.copyWith(fontSize: 9),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ).animate(delay: (350 + index * 50).ms).fadeIn().scale(),
+                      );
+                    },
+                  ),
+                ),
+
                 const SizedBox(height: 30),
 
-                // Level progress with liquid effect
+                // Life Wheel (moved above metaskills)
+                Text(
+                  'Колесо баланса',
+                  style: AppTextStyles.h2,
+                ).animate(delay: 500.ms).fadeIn(),
+
+                const SizedBox(height: 16),
+
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: AppDecorations.cardBackground,
-                  child: Row(
+                  child: Column(
                     children: [
-                      // Circular liquid progress
-                      SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: LiquidCircularProgressIndicator(
-                          value: user.levelProgress,
-                          backgroundColor: AppColors.textSecondary.withOpacity(0.2),
-                          valueColor: AlwaysStoppedAnimation(AppColors.success),
-                          borderColor: AppColors.success,
-                          borderWidth: 3,
-                          direction: Axis.vertical,
-                          center: Text(
-                            '${user.level}',
-                            style: AppTextStyles.h2.copyWith(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Уровень ${user.level}',
-                              style: AppTextStyles.h3,
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  '450 MYC до следующего уровня',
-                                  style: AppTextStyles.caption,
-                                ),
-                                Text(
-                                  '${(user.levelProgress * 100).toInt()}%',
-                                  style: AppTextStyles.caption.copyWith(
-                                    color: AppColors.success,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: SizedBox(
-                                height: 12,
-                                child: LiquidLinearProgressIndicator(
-                                  value: user.levelProgress,
-                                  backgroundColor: AppColors.textSecondary.withOpacity(0.2),
-                                  valueColor: AlwaysStoppedAnimation(AppColors.success),
-                                  borderRadius: 10,
-                                  direction: Axis.horizontal,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ).animate().fadeIn(delay: 400.ms),
-
-                const SizedBox(height: 30),
-
-                // Metaskills radar chart
-                MetaskillsRadar(
-                  domainScores: {
-                    MetaskillDomain.cognitive: 0.75,
-                    MetaskillDomain.social: 0.65,
-                    MetaskillDomain.emotional: 0.82,
-                    MetaskillDomain.practical: 0.58,
-                  },
-                ).animate().fadeIn(delay: 500.ms),
-
-                const SizedBox(height: 30),
-
-                // Recommendation card with shimmer
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: AppDecorations.gradientCard(
-                    AppGradients.purpleGradient,
-                  ),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                      LifeWheelChart(balance: lifeWheel, size: 280),
+                      const SizedBox(height: 20),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Icon(
-                            Icons.auto_awesome,
-                            color: Colors.white,
-                            size: 24,
+                          _buildStatItem(
+                            'Средний балл',
+                            '${lifeWheel.averageBalance.toInt()}',
                           ),
-                          SizedBox(width: 12),
-                          Text(
-                            'Рекомендация дня',
-                            style: AppTextStyles.h3,
+                          _buildStatItem(
+                            'Гармония',
+                            '${(lifeWheel.harmony * 100).toInt()}%',
                           ),
                         ],
                       ),
-                      SizedBox(height: 12),
-                      Text(
-                        'Попробуйте новый AI ментор - Карл Юнг поможет разобраться с вашими снами и подсознанием',
-                        style: AppTextStyles.body,
-                      ),
                     ],
                   ),
-                )
-                    .animate(
-                      onPlay: (controller) => controller.repeat(),
-                    )
-                    .shimmer(
-                      duration: 2000.ms,
-                      color: Colors.white.withOpacity(0.3),
-                    ),
+                ).animate(delay: 550.ms).fadeIn().scale(begin: const Offset(0.9, 0.9)),
+
+                const SizedBox(height: 30),
+
+                // 16 Metaskills Radar
+                Text(
+                  '16 Метанавыков',
+                  style: AppTextStyles.h2,
+                ).animate(delay: 600.ms).fadeIn(),
+
+                const SizedBox(height: 16),
+
+                Center(
+                  child: MetaskillsRadar16(
+                    skills: all16Skills,
+                    size: 340,
+                    onSkillTap: (skill) {
+                      MetaskillDetailModal.show(context, skill);
+                    },
+                  ),
+                ).animate(delay: 650.ms).fadeIn().scale(begin: const Offset(0.9, 0.9)),
 
                 const SizedBox(height: 20),
               ],
@@ -273,17 +327,21 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTaskCard(String title, String subtitle,
-      {required bool isCompleted, bool isRecommended = false}) {
+  Widget _buildTaskCard(
+    String title,
+    String subtitle, {
+    required bool isCompleted,
+    bool isRecommended = false,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: AppDecorations.cardBackground,
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
               color: isCompleted
                   ? AppColors.success.withOpacity(0.2)
@@ -299,10 +357,10 @@ class HomeScreen extends StatelessWidget {
                   : isRecommended
                       ? AppColors.warning
                       : AppColors.textSecondary,
-              size: 20,
+              size: 18,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,19 +371,30 @@ class HomeScreen extends StatelessWidget {
                       ? AppTextStyles.body.copyWith(
                           decoration: TextDecoration.lineThrough,
                           color: AppColors.textSecondary,
+                          fontSize: 14,
                         )
-                      : AppTextStyles.body,
+                      : AppTextStyles.body.copyWith(fontSize: 14),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: AppTextStyles.caption,
+                  style: AppTextStyles.caption.copyWith(fontSize: 12),
                 ),
               ],
             ),
           ),
         ],
       ),
-    ).animate().fadeIn(delay: 300.ms).slideX(begin: -0.2, end: 0);
+    ).animate(delay: 250.ms).fadeIn().slideX(begin: -0.2, end: 0);
+  }
+
+  Widget _buildStatItem(String label, String value) {
+    return Column(
+      children: [
+        Text(value, style: AppTextStyles.h2.copyWith(fontSize: 22)),
+        const SizedBox(height: 4),
+        Text(label, style: AppTextStyles.caption),
+      ],
+    );
   }
 }
