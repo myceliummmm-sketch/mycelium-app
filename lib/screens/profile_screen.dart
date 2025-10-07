@@ -58,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 40,
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: AppColors.primaryPurple,
                       child: Text(
                         user.firstName?.substring(0, 1).toUpperCase() ?? 'U',
                         style: const TextStyle(
@@ -269,11 +269,11 @@ class ProfileScreen extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isUnlocked
-          ? AppColors.primary.withOpacity(0.2)
+          ? AppColors.primaryPurple.withOpacity(0.2)
           : Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isUnlocked ? AppColors.primary : Colors.white.withOpacity(0.1),
+          color: isUnlocked ? AppColors.primaryPurple : Colors.white.withOpacity(0.1),
           width: 2,
         ),
       ),
