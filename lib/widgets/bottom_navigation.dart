@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
-import '../screens/home_screen.dart';
 import '../screens/tests_screen.dart';
 import '../screens/p2p_screen.dart';
 import '../screens/ai_screen.dart';
@@ -19,11 +18,10 @@ class _MainNavigatorState extends State<MainNavigator> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = const [
-    HomeScreen(),
+    ProfileScreen(), // mCode вместо Home
     TestsScreen(),
     P2PScreen(),
     AIScreen(),
-    ProfileScreen(),
     CommunityScreen(),
   ];
 
@@ -62,11 +60,11 @@ class _MainNavigatorState extends State<MainNavigator> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(Icons.home, 'Home', 0),
+          _buildNavItem(Icons.account_circle, 'mCode', 0),
           _buildNavItem(Icons.quiz, 'Tests', 1),
           const SizedBox(width: 80), // Space for P2P button
           _buildNavItem(Icons.psychology, 'AI', 3),
-          _buildNavItem(Icons.account_circle, 'Profile', 4),
+          _buildNavItem(Icons.groups, 'Community', 4),
         ],
       ),
     );
