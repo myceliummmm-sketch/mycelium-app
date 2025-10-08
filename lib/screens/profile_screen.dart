@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../models/metaskill_detailed.dart';
+import '../config/app_version.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -43,6 +44,31 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
         child: SafeArea(
           child: Column(
             children: [
+              // Version badge (top-right)
+              Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 8, right: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.primaryPurple.withOpacity(0.5),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    AppVersion.displayVersion,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryPurple,
+                    ),
+                  ),
+                ),
+              ),
+
               // mCode Card
               Container(
                 margin: const EdgeInsets.all(16),
