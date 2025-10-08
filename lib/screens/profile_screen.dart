@@ -2,8 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
-import '../models/metaskill.dart';
-import '../models/metaskill_domain.dart';
+import '../models/metaskill_detailed.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -29,8 +28,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final skills = Metaskill.getAll16Skills();
-    final weakSkills = skills.where((s) => s.level < 60).toList();
+    final skills = MetaskillDetailed.getAll16Skills();
+    final weakSkills = skills.where((s) => s.currentLevel < 60).toList();
 
     return Scaffold(
       body: Container(
@@ -586,7 +585,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     );
   }
 
-  Widget _buildSkillsTab(List<Metaskill> skills, List<Metaskill> weakSkills) {
+  Widget _buildSkillsTab(List<MetaskillDetailed> skills, List<MetaskillDetailed> weakSkills) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -645,7 +644,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        skill.name,
+                        skill.title,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
@@ -654,7 +653,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       ),
                     ),
                     Text(
-                      '${skill.level}',
+                      '${skill.currentLevel}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -671,7 +670,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 }
 
 class _SkillsWheelPainter extends CustomPainter {
-  final List<Metaskill> skills;
+  final List<MetaskillDetailed> skills;
 
   _SkillsWheelPainter(this.skills);
 
@@ -708,7 +707,7 @@ class _SkillsWheelPainter extends CustomPainter {
     for (int i = 0; i < skills.length; i++) {
       final skill = skills[i];
       final angle = (i * 2 * math.pi / skills.length) - math.pi / 2;
-      final distance = radius * (skill.level / 100);
+      final distance = radius * (skill.currentLevel / 100);
       final pos = Offset(
         center.dx + distance * math.cos(angle),
         center.dy + distance * math.sin(angle),
@@ -716,9 +715,9 @@ class _SkillsWheelPainter extends CustomPainter {
 
       // Skill point
       final pointPaint = Paint()
-        ..color = skill.level >= 70
+        ..color = skill.currentLevel >= 70
             ? AppColors.success
-            : skill.level >= 50
+            : skill.currentLevel >= 50
                 ? AppColors.warning
                 : Colors.red
         ..style = PaintingStyle.fill;

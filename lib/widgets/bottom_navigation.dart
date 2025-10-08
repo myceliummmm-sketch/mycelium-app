@@ -5,7 +5,7 @@ import '../screens/home_screen.dart';
 import '../screens/tests_screen.dart';
 import '../screens/p2p_screen.dart';
 import '../screens/ai_screen.dart';
-import '../screens/leaderboard_screen.dart';
+import '../screens/profile_screen.dart';
 import '../screens/community_screen.dart';
 
 class MainNavigator extends StatefulWidget {
@@ -23,7 +23,7 @@ class _MainNavigatorState extends State<MainNavigator> {
     TestsScreen(),
     P2PScreen(),
     AIScreen(),
-    LeaderboardScreen(),
+    ProfileScreen(),
     CommunityScreen(),
   ];
 
@@ -66,7 +66,7 @@ class _MainNavigatorState extends State<MainNavigator> {
           _buildNavItem(Icons.quiz, 'Tests', 1),
           const SizedBox(width: 80), // Space for P2P button
           _buildNavItem(Icons.psychology, 'AI', 3),
-          _buildNavItem(Icons.groups, 'Community', 5),
+          _buildNavItem(Icons.account_circle, 'Profile', 4),
         ],
       ),
     );
