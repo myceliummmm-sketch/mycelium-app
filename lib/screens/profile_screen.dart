@@ -18,7 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -29,177 +29,152 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final skills = MetaskillDetailed.getAll16Skills();
-    final weakSkills = skills.where((s) => s.currentLevel < 60).toList();
-
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.background, Color(0xFF1A1F3A)],
-          ),
+      backgroundColor: const Color(0xFFF8F9FA),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Version badge (top-right)
+            Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                margin: const EdgeInsets.only(top: 8, right: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.primaryPurple.withOpacity(0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  AppVersion.displayVersion,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryPurple,
+                  ),
+                ),
+              ),
+            ),
+
+            // Compact mCode Card
+            _buildMCodeCard(),
+
+            // Tabs
+            _buildTabs(),
+
+            // Tab Content
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildOverviewTab(),
+                  _buildSpheresTab(),
+                  _buildSkillsTab(),
+                  _buildMoreTab(),
+                ],
+              ),
+            ),
+          ],
         ),
-        child: SafeArea(
-          child: Column(
+      ),
+    );
+  }
+
+  Widget _buildMCodeCard() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: AppGradients.primaryGradient,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryPurple.withOpacity(0.35),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with icon and info
+          Row(
             children: [
-              // Version badge (top-right)
-              Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 8, right: 16),
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.primaryPurple.withOpacity(0.5),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    AppVersion.displayVersion,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryPurple,
-                    ),
-                  ),
+              Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Text('🔮', style: TextStyle(fontSize: 52)),
                 ),
               ),
-
-              // mCode Card
-              Container(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: AppGradients.primaryGradient,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryPurple.withOpacity(0.35),
-                      blurRadius: 20,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 70,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Center(
-                            child: Text('🔮', style: TextStyle(fontSize: 40)),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'СТРАТЕГ-ВИЗИОНЕР',
-                                style: AppTextStyles.h2.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                'Level 12 • 3,450 XP • Trust: 87',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    // Personality chips
-                    Row(
-                      children: [
-                        _buildPersonalityChip('DISC', 'D/I'),
-                        const SizedBox(width: 8),
-                        _buildPersonalityChip('MBTI', 'ENTJ'),
-                        const SizedBox(width: 8),
-                        _buildPersonalityChip('ENNEAGRAM', 'Type 3'),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    // Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildMcodeButton('📤 Share'),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _buildMcodeButton('🍄 245 MYC'),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _buildMcodeButton('💎 Pro'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ).animate().fadeIn().slideY(begin: -0.1, end: 0),
-
-              // Tabs
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.cardBackground,
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.white.withOpacity(0.1),
-                      width: 1,
-                    ),
-                  ),
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  indicatorColor: AppColors.primaryPurple,
-                  indicatorWeight: 3,
-                  labelColor: AppColors.primaryPurple,
-                  unselectedLabelColor: AppColors.textSecondary,
-                  labelStyle: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  tabs: const [
-                    Tab(text: 'OVERVIEW'),
-                    Tab(text: 'ДОМЕНЫ'),
-                    Tab(text: 'СКИЛЫ'),
-                  ],
-                ),
-              ),
-
-              // Tab Content
+              const SizedBox(width: 16),
               Expanded(
-                child: TabBarView(
-                  controller: _tabController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildOverviewTab(),
-                    _buildDomainsTab(),
-                    _buildSkillsTab(skills, weakSkills),
+                    const Text(
+                      'СТРАТЕГ-ВИЗИОНЕР',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Level 12 • 3,450 XP • Trust Score: 87',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white.withOpacity(0.95),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ],
           ),
-        ),
+
+          const SizedBox(height: 14),
+
+          // Personality chips
+          Row(
+            children: [
+              _buildPersonalityChip('DISC', 'D/I'),
+              const SizedBox(width: 8),
+              _buildPersonalityChip('MBTI', 'ENTJ'),
+              const SizedBox(width: 8),
+              _buildPersonalityChip('ENNEAGRAM', 'Type 3'),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+
+          // Buttons
+          Row(
+            children: [
+              Expanded(
+                child: _buildMCodeButton('📤 Share', () {}),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildMCodeButton('🍄 245 MYC', () {}),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildMCodeButton('💎 Pro', () {}),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -207,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   Widget _buildPersonalityChip(String label, String value) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.2),
           borderRadius: BorderRadius.circular(10),
@@ -220,10 +195,10 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withOpacity(0.9),
               ),
             ),
             const SizedBox(height: 4),
@@ -231,8 +206,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
               value,
               style: const TextStyle(
                 fontSize: 15,
-                color: Colors.white,
                 fontWeight: FontWeight.w700,
+                color: Colors.white,
               ),
             ),
           ],
@@ -241,65 +216,139 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     );
   }
 
-  Widget _buildMcodeButton(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+  Widget _buildMCodeButton(String text, VoidCallback onTap) {
+    return Material(
+      color: Colors.white.withOpacity(0.2),
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.3),
-          width: 1,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 13,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.white.withOpacity(0.3),
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildOverviewTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '🎯 ЗАДАЧИ ЭТОЙ НЕДЕЛИ',
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.primaryPurple,
-              fontWeight: FontWeight.w800,
-              fontSize: 12,
-              letterSpacing: 1,
-            ),
+  Widget _buildTabs() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: const Color(0xFFE5E7EB),
+            width: 1,
           ),
-          const SizedBox(height: 16),
-          _buildTaskCard(
-            number: 1,
-            title: 'Попроси повышение или бонус',
-            desc: 'Ты избегаешь разговоров о деньгах. Составь аргументы о своей ценности.',
-            testDone: true,
-            aiDone: true,
-            p2pDone: false,
-            testScore: 45,
-          ),
-          const SizedBox(height: 12),
-          _buildTaskCard(
-            number: 2,
-            title: 'Публичное выступление на 5 минут',
-            desc: 'Запишись на митап или созвон команды. Подготовь короткий доклад.',
-            testDone: false,
-            aiDone: false,
-            p2pDone: false,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
           ),
         ],
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicatorColor: const Color(0xFF667EEA),
+        indicatorWeight: 3,
+        labelColor: const Color(0xFF667EEA),
+        unselectedLabelColor: const Color(0xFF6B7280),
+        labelStyle: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
+        tabs: const [
+          Tab(text: 'Overview'),
+          Tab(text: 'Сферы'),
+          Tab(text: 'Скилы'),
+          Tab(text: 'More'),
+        ],
+      ),
+    );
+  }
+
+  // OVERVIEW TAB
+  Widget _buildOverviewTab() {
+    return SingleChildScrollView(
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 3,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '🎯 ЗАДАЧИ ЭТОЙ НЕДЕЛИ',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF667EEA),
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildTaskCard(
+              number: 1,
+              title: 'Попроси повышение или бонус',
+              description: 'Ты избегаешь разговоров о деньгах. Составь аргументы о своей ценности и назначь встречу с руководителем.',
+              testDone: true,
+              testScore: '45/100',
+              aiDone: true,
+              p2pDone: false,
+              nextStep: 'Следующий шаг: пройди P2P практику для прокачки',
+            ),
+            const SizedBox(height: 12),
+            _buildTaskCard(
+              number: 2,
+              title: 'Публичное выступление на 5 минут',
+              description: 'Запишись на митап или созвон команды. Подготовь короткий доклад о своём проекте и выступи перед коллегами.',
+              testDone: false,
+              aiDone: false,
+              p2pDone: false,
+              nextStep: 'Рекомендуем: начни с теста, чтобы понять свой уровень',
+            ),
+            const SizedBox(height: 12),
+            _buildTaskCard(
+              number: 3,
+              title: 'Делегируй одну задачу полностью ✅',
+              description: 'Выбери рутинную задачу, которую ты всегда делаешь сам. Передай её коллеге с чёткими инструкциями.',
+              testDone: true,
+              testScore: '73/100',
+              aiDone: true,
+              p2pDone: true,
+              p2pScore: '92%',
+              nextStep: '✅ Задача выполнена! Отличная работа!',
+              completed: true,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -307,114 +356,118 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   Widget _buildTaskCard({
     required int number,
     required String title,
-    required String desc,
+    required String description,
     required bool testDone,
+    String? testScore,
     required bool aiDone,
     required bool p2pDone,
-    int? testScore,
+    String? p2pScore,
+    required String nextStep,
+    bool completed = false,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.warning.withOpacity(0.15),
-            AppColors.warning.withOpacity(0.05),
-          ],
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFF7ED), Color(0xFFFFEDD5)],
         ),
         borderRadius: BorderRadius.circular(14),
-        border: Border(
-          left: BorderSide(
-            color: AppColors.warning,
-            width: 4,
-          ),
+        border: const Border(
+          left: BorderSide(color: Color(0xFFF59E0B), width: 4),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: AppColors.warning,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    '$number',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
-                  ),
+          // Task number
+          Container(
+            width: 28,
+            height: 28,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF59E0B),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                '$number',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
           const SizedBox(height: 8),
+
+          // Title
           Text(
-            desc,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.white.withOpacity(0.8),
+            title,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF92400E),
               height: 1.4,
             ),
           ),
+          const SizedBox(height: 8),
+
+          // Description
+          Text(
+            description,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFFB45309),
+              height: 1.5,
+            ),
+          ),
           const SizedBox(height: 12),
+
+          // Progress
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withOpacity(0.05),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
                   children: [
                     _buildProgressBadge(
-                      testDone ? '✅ Тест: $testScore/100' : '○ Тест',
+                      testDone ? '✅ Тест: ${testScore ?? 'готово'}' : '○ Тест: не пройден',
                       testDone,
                     ),
-                    const SizedBox(width: 12),
                     _buildProgressBadge(
-                      aiDone ? '✅ AI' : '○ AI',
+                      aiDone ? '✅ AI прочитано' : '○ AI: не прочитано',
                       aiDone,
                     ),
-                    const SizedBox(width: 12),
                     _buildProgressBadge(
-                      p2pDone ? '✅ P2P' : '○ P2P',
+                      p2pDone ? '✅ P2P: ${p2pScore ?? 'готово'}' : '○ P2P: не начато',
                       p2pDone,
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '→ Следующий шаг: ${!p2pDone ? "пройди P2P практику" : !aiDone ? "прочитай AI разбор" : "пройди тест"}',
+                  '→ $nextStep',
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.white.withOpacity(0.9),
                     fontWeight: FontWeight.w600,
+                    color: completed ? const Color(0xFF166534) : const Color(0xFF92400E),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 12),
+
+          // Action buttons
           Row(
             children: [
               Expanded(
@@ -422,17 +475,19 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.warning,
+                    backgroundColor: completed ? const Color(0xFF22C55E) : const Color(0xFFF59E0B),
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
+                    elevation: 0,
                   ),
-                  child: const Text(
-                    '🎮 Начать P2P',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
+                  child: Text(
+                    completed ? '✅ Архивировать' : '🎮 Начать P2P',
+                    style: const TextStyle(
                       fontSize: 14,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -442,7 +497,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                 child: OutlinedButton(
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors.warning, width: 2),
+                    foregroundColor: const Color(0xFF92400E),
+                    side: const BorderSide(color: Color(0xFFF59E0B), width: 2),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -451,9 +507,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   child: const Text(
                     '🤖 AI',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
                       fontSize: 14,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -466,310 +521,537 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   }
 
   Widget _buildProgressBadge(String text, bool done) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: done ? AppColors.success : AppColors.textSecondary,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: done
+            ? const Color(0xFF22C55E).withOpacity(0.15)
+            : const Color(0xFF6B7280).withOpacity(0.15),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: done ? const Color(0xFF166534) : const Color(0xFF6B7280),
+        ),
       ),
     );
   }
 
-  Widget _buildDomainsTab() {
-    final domains = [
-      {
-        'name': '💰 Карьера',
-        'score': 45,
-        'isWeak': true,
-        'problems': [
-          'Не просишь повышение',
-          'Избегаешь обсуждения зарплаты',
-        ],
-      },
-      {
-        'name': '🗣️ Коммуникация',
-        'score': 52,
-        'isWeak': true,
-        'problems': [
-          'Боишься публичных выступлений',
-        ],
-      },
-      {
-        'name': '🎯 Стратегия',
-        'score': 85,
-        'isWeak': false,
-        'problems': [
-          'Видишь долгосрочные тренды рынка',
-        ],
-      },
-    ];
-
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: domains.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final domain = domains[index];
-        final isWeak = domain['isWeak'] as bool;
-        final score = domain['score'] as int;
-        final name = domain['name'] as String;
-        final problems = domain['problems'] as List<String>;
-
-        return Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: isWeak
-                  ? [
-                      Colors.red.withOpacity(0.1),
-                      Colors.red.withOpacity(0.05),
-                    ]
-                  : [
-                      AppColors.success.withOpacity(0.1),
-                      AppColors.success.withOpacity(0.05),
-                    ],
+  // SPHERES TAB
+  Widget _buildSpheresTab() {
+    return SingleChildScrollView(
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 3,
+              offset: const Offset(0, 1),
             ),
-            borderRadius: BorderRadius.circular(14),
-            border: Border(
-              left: BorderSide(
-                color: isWeak ? Colors.red : AppColors.success,
-                width: 4,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '🎨 СФЕРЫ ЖИЗНИ',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF667EEA),
+                letterSpacing: 1,
               ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 16),
+            _buildSphereCard(
+              name: '💰 Карьера',
+              score: 45,
+              isWeak: true,
+              problems: [
+                {
+                  'text': '❌ Не просишь повышение, хотя заслуживаешь',
+                  'p2p': true,
+                  'ai': true,
+                  'test': false,
+                },
+                {
+                  'text': '❌ Избегаешь обсуждения зарплаты',
+                  'p2p': false,
+                  'ai': false,
+                  'test': false,
+                },
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildSphereCard(
+              name: '🗣️ Коммуникация',
+              score: 52,
+              isWeak: true,
+              problems: [
+                {
+                  'text': '❌ Боишься публичных выступлений',
+                  'p2p': false,
+                  'ai': false,
+                  'test': true,
+                },
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildSphereCard(
+              name: '🎯 Стратегия',
+              score: 85,
+              isWeak: false,
+              problems: [
+                {
+                  'text': '✅ Видишь долгосрочные тренды рынка',
+                  'p2p': true,
+                  'ai': true,
+                  'test': true,
+                },
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSphereCard({
+    required String name,
+    required int score,
+    required bool isWeak,
+    required List<Map<String, dynamic>> problems,
+  }) {
+    final bgColors = isWeak
+        ? [const Color(0xFFFEF2F2), const Color(0xFFFEE2E2)]
+        : [const Color(0xFFF0FDF4), const Color(0xFFDCFCE7)];
+    final borderColor = isWeak ? const Color(0xFFEF4444) : const Color(0xFF22C55E);
+    final nameColor = isWeak ? const Color(0xFF991B1B) : const Color(0xFF166534);
+    final scoreColor = isWeak ? const Color(0xFFDC2626) : const Color(0xFF16A34A);
+    final textColor = isWeak ? const Color(0xFF991B1B) : const Color(0xFF166534);
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: bgColors,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border(
+          left: BorderSide(color: borderColor, width: 4),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Text(
+                name,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: nameColor,
+                ),
+              ),
+              Text(
+                '$score',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: scoreColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Problems
+          ...problems.asMap().entries.map((entry) {
+            final index = entry.key;
+            final problem = entry.value;
+            final isLast = index == problems.length - 1;
+
+            return Container(
+              margin: EdgeInsets.only(bottom: isLast ? 0 : 16),
+              padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
+              decoration: BoxDecoration(
+                border: isLast
+                    ? null
+                    : Border(
+                        bottom: BorderSide(
+                          color: Colors.black.withOpacity(0.05),
+                          width: 1,
+                        ),
+                      ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    name,
+                    problem['text'] as String,
                     style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17,
-                      color: isWeak ? Colors.red.shade300 : AppColors.success,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                      height: 1.4,
                     ),
                   ),
-                  Text(
-                    '$score',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: isWeak ? Colors.red : AppColors.success,
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 8,
+                    children: [
+                      _buildProgressBadge(
+                        problem['p2p'] as bool ? '✅ P2P: 87%' : '○ P2P',
+                        problem['p2p'] as bool,
+                      ),
+                      _buildProgressBadge(
+                        problem['ai'] as bool ? '✅ AI' : '○ AI',
+                        problem['ai'] as bool,
+                      ),
+                      _buildProgressBadge(
+                        problem['test'] as bool ? '✅ Тест' : '○ Тест',
+                        problem['test'] as bool,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: textColor,
+                        side: BorderSide(color: borderColor, width: 2),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        isWeak ? '🎯 Начать решать' : '🎮 Помоги другим',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              ...problems.map((problem) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${isWeak ? "❌" : "✅"} $problem',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white.withOpacity(0.9),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () {},
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: isWeak ? Colors.red : AppColors.success,
-                                width: 2,
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Text(
-                              isWeak ? '🎯 Начать решать' : '🎮 Помоги другим',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSkillsTab(List<MetaskillDetailed> skills, List<MetaskillDetailed> weakSkills) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '⚡ КАРТА НАВЫКОВ',
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.primaryPurple,
-              fontWeight: FontWeight.w800,
-              fontSize: 12,
-              letterSpacing: 1,
-            ),
-          ),
-          const SizedBox(height: 24),
-          // Radar Chart
-          SizedBox(
-            height: 320,
-            child: CustomPaint(
-              painter: _SkillsWheelPainter(skills),
-              size: const Size(320, 320),
-            ),
-          ),
-          const SizedBox(height: 32),
-          Text(
-            '⚠️ ТРЕБУЮТ ПРОКАЧКИ',
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.primaryPurple,
-              fontWeight: FontWeight.w800,
-              fontSize: 12,
-              letterSpacing: 1,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ...weakSkills.map((skill) => Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.red.withOpacity(0.1),
-                      Colors.red.withOpacity(0.05),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border(
-                    left: BorderSide(
-                      color: Colors.red,
-                      width: 4,
-                    ),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Text(skill.emoji, style: const TextStyle(fontSize: 28)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        skill.title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '${skill.currentLevel}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-              )),
+            );
+          }).toList(),
         ],
       ),
     );
   }
-}
 
-class _SkillsWheelPainter extends CustomPainter {
-  final List<MetaskillDetailed> skills;
+  // SKILLS TAB
+  Widget _buildSkillsTab() {
+    final skills = MetaskillDetailed.getAll16Skills();
 
-  _SkillsWheelPainter(this.skills);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 40;
-
-    // Draw grid circles
-    final gridPaint = Paint()
-      ..color = AppColors.primaryBlue.withOpacity(0.1)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
-    for (int i = 1; i <= 4; i++) {
-      canvas.drawCircle(center, radius * i / 4, gridPaint);
-    }
-
-    // Draw axes
-    final axisPaint = Paint()
-      ..color = Colors.white.withOpacity(0.1)
-      ..strokeWidth = 1;
-
-    for (int i = 0; i < skills.length; i++) {
-      final angle = (i * 2 * math.pi / skills.length) - math.pi / 2;
-      final end = Offset(
-        center.dx + radius * math.cos(angle),
-        center.dy + radius * math.sin(angle),
-      );
-      canvas.drawLine(center, end, axisPaint);
-    }
-
-    // Draw skill points
-    for (int i = 0; i < skills.length; i++) {
-      final skill = skills[i];
-      final angle = (i * 2 * math.pi / skills.length) - math.pi / 2;
-      final distance = radius * (skill.currentLevel / 100);
-      final pos = Offset(
-        center.dx + distance * math.cos(angle),
-        center.dy + distance * math.sin(angle),
-      );
-
-      // Skill point
-      final pointPaint = Paint()
-        ..color = skill.currentLevel >= 70
-            ? AppColors.success
-            : skill.currentLevel >= 50
-                ? AppColors.warning
-                : Colors.red
-        ..style = PaintingStyle.fill;
-
-      canvas.drawCircle(pos, 6, pointPaint);
-
-      // Emoji label
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: skill.emoji,
-          style: const TextStyle(fontSize: 20),
+    return SingleChildScrollView(
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 3,
+              offset: const Offset(0, 1),
+            ),
+          ],
         ),
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '⚡ КАРТА НАВЫКОВ',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF667EEA),
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 24),
 
-      final labelDistance = radius + 20;
-      final labelPos = Offset(
-        center.dx + labelDistance * math.cos(angle) - textPainter.width / 2,
-        center.dy + labelDistance * math.sin(angle) - textPainter.height / 2,
-      );
+            // Circular skills wheel
+            _buildSkillsWheel(skills),
 
-      textPainter.paint(canvas, labelPos);
-    }
+            const SizedBox(height: 32),
+
+            // Skills to improve
+            const Text(
+              '⚠️ ТРЕБУЮТ ПРОКАЧКИ',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF667EEA),
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            ...skills
+                .where((s) => s.currentLevel < 60)
+                .take(2)
+                .map((skill) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _buildSkillImproveCard(skill),
+                    ))
+                .toList(),
+          ],
+        ),
+      ),
+    );
   }
 
-  @override
-  bool shouldRepaint(_SkillsWheelPainter oldDelegate) => false;
+  Widget _buildSkillsWheel(List<MetaskillDetailed> skills) {
+    return Center(
+      child: SizedBox(
+        width: 320,
+        height: 320,
+        child: Stack(
+          children: [
+            // Background circles
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFFE0E7FF),
+                  width: 2,
+                ),
+              ),
+            ),
+            // Skill points
+            ...skills.take(12).toList().asMap().entries.map((entry) {
+              final index = entry.key;
+              final skill = entry.value;
+              final angle = (index * 30) * math.pi / 180;
+              final radius = 140.0;
+              final x = 160 + radius * math.cos(angle - math.pi / 2) - 32;
+              final y = 160 + radius * math.sin(angle - math.pi / 2) - 32;
+
+              return Positioned(
+                left: x,
+                top: y,
+                child: _buildSkillPoint(skill),
+              );
+            }).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkillPoint(MetaskillDetailed skill) {
+    final level = skill.currentLevel;
+    final color = level >= 75
+        ? const Color(0xFF22C55E)
+        : level >= 60
+            ? const Color(0xFFF59E0B)
+            : const Color(0xFFEF4444);
+    final textColor = level >= 75
+        ? const Color(0xFF166534)
+        : level >= 60
+            ? const Color(0xFF92400E)
+            : const Color(0xFF991B1B);
+
+    return Container(
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: color, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            skill.emoji,
+            style: const TextStyle(fontSize: 22),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            '$level',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: textColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSkillImproveCard(MetaskillDetailed skill) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFEF2F2), Color(0xFFFEE2E2)],
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: const Border(
+          left: BorderSide(color: Color(0xFFEF4444), width: 4),
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(
+                skill.emoji,
+                style: const TextStyle(fontSize: 28),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  skill.title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF991B1B),
+                  ),
+                ),
+              ),
+              Text(
+                '${skill.currentLevel}',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFFDC2626),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '❌ Требует развития',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF991B1B),
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: [
+                    _buildProgressBadge('○ P2P', false),
+                    _buildProgressBadge('○ AI', false),
+                    _buildProgressBadge('○ Тест', false),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {},
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF991B1B),
+                      side: const BorderSide(color: Color(0xFFEF4444), width: 2),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      '📝 Пройти тест',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // MORE TAB
+  Widget _buildMoreTab() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '⚙️ НАСТРОЙКИ',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF667EEA),
+              letterSpacing: 1,
+            ),
+          ),
+          const SizedBox(height: 40),
+          const Center(
+            child: Text(
+              'Настройки профиля, подписка, приватность',
+              style: TextStyle(
+                color: Color(0xFF6B7280),
+                height: 1.6,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

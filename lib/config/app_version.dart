@@ -1,7 +1,7 @@
 /// App version configuration
 class AppVersion {
-  static const String version = '1.0.5';
-  static const int buildNumber = 5;
+  static const String version = '1.0.6';
+  static const int buildNumber = 6;
 
   /// Full version string with build number
   static String get fullVersion => 'v$version+$buildNumber';
