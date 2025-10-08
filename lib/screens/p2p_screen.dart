@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../models/p2p_scenario.dart';
+import '../widgets/scenario_stack.dart';
 
 class P2PScreen extends StatefulWidget {
   const P2PScreen({super.key});
@@ -15,6 +16,8 @@ class _P2PScreenState extends State<P2PScreen> {
   P2PScenario? selectedScenario;
   bool showAllScenarios = false;
   bool showProList = false;
+  final GlobalKey _stackKey = GlobalKey();
+  final List<P2PScenario> _likedScenarios = [];
 
   @override
   Widget build(BuildContext context) {
@@ -164,239 +167,196 @@ class _P2PScreenState extends State<P2PScreen> {
                 const SizedBox(height: 8),
 
                 Text(
-                  'Выбери сценарий для практики',
+                  'Свайпни вправо если нравится, влево - пропустить',
                   style: AppTextStyles.body.copyWith(
                     color: AppColors.textSecondary,
                   ),
+                  textAlign: TextAlign.center,
                 ).animate(delay: 150.ms).fadeIn(),
 
                 const SizedBox(height: 30),
 
-                // Scenario cubes (tags)
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  alignment: WrapAlignment.center,
-                  children: scenarios.map((scenario) {
-                    final isSelected = selectedScenario?.id == scenario.id;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedScenario = isSelected ? null : scenario;
-                        });
-                      },
-                      onLongPress: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            backgroundColor: AppColors.cardBackground,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            title: Row(
-                              children: [
-                                Text(scenario.emoji, style: const TextStyle(fontSize: 28)),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    scenario.title,
-                                    style: AppTextStyles.h3,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            content: Text(
-                              scenario.description,
-                              style: AppTextStyles.body.copyWith(height: 1.6),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text(
-                                  'Понятно',
-                                  style: TextStyle(color: AppColors.primaryPurple),
-                                ),
-                              ),
-                            ],
+                // Swipeable card stack
+                SizedBox(
+                  height: 480,
+                  child: ScenarioStack(
+                    key: _stackKey,
+                    scenarios: scenarios,
+                    onLike: (scenario) {
+                      setState(() {
+                        _likedScenarios.add(scenario);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('❤️ ${scenario.title} добавлен'),
+                          backgroundColor: AppColors.success,
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                    onSkip: (scenario) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('👋 ${scenario.title} пропущен'),
+                          backgroundColor: AppColors.textSecondary,
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                  ),
+                ).animate(delay: 200.ms).fadeIn().scale(begin: const Offset(0.95, 0.95)),
+
+                const SizedBox(height: 24),
+
+                // Swipe buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Skip button
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.red.withOpacity(0.5),
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red.withOpacity(0.2),
+                            blurRadius: 20,
+                            spreadRadius: 5,
                           ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () => (_stackKey.currentState as dynamic)?.swipeLeft(),
+                        icon: const Icon(Icons.close, size: 32),
+                        color: Colors.red,
+                        iconSize: 32,
+                        padding: const EdgeInsets.all(20),
+                      ),
+                    ),
+                    const SizedBox(width: 40),
+                    // Like button
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.success.withOpacity(0.5),
+                          width: 2,
                         ),
-                        decoration: BoxDecoration(
-                          gradient: isSelected
-                              ? AppGradients.primaryGradient
-                              : null,
-                          color: isSelected
-                              ? null
-                              : AppColors.cardBackground,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.primaryPurple
-                                : Colors.white.withOpacity(0.1),
-                            width: isSelected ? 2 : 1,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.success.withOpacity(0.2),
+                            blurRadius: 20,
+                            spreadRadius: 5,
                           ),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: AppColors.primaryPurple.withOpacity(0.4),
-                                    blurRadius: 12,
-                                    spreadRadius: 2,
-                                  ),
-                                ]
-                              : null,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              scenario.emoji,
-                              style: TextStyle(
-                                fontSize: isSelected ? 22 : 20,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              scenario.title,
-                              style: AppTextStyles.body.copyWith(
-                                fontWeight: isSelected
-                                    ? FontWeight.w700
-                                    : FontWeight.w600,
-                                fontSize: isSelected ? 15 : 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ).animate(delay: (200 + scenarios.indexOf(scenario) * 50).ms)
-                          .fadeIn()
-                          .scale(begin: const Offset(0.8, 0.8)),
-                    );
-                  }).toList(),
-                ),
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () => (_stackKey.currentState as dynamic)?.swipeRight(),
+                        icon: const Icon(Icons.favorite, size: 32),
+                        color: AppColors.success,
+                        iconSize: 32,
+                        padding: const EdgeInsets.all(20),
+                      ),
+                    ),
+                  ],
+                ).animate(delay: 300.ms).fadeIn().slideY(begin: 0.1, end: 0),
 
                 const SizedBox(height: 16),
 
-                // Show more/less button
-                if (!showAllScenarios)
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        showAllScenarios = true;
-                      });
-                    },
+                // Liked scenarios count
+                if (_likedScenarios.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.success.withOpacity(0.4),
+                        width: 1,
+                      ),
+                    ),
                     child: Text(
-                      '+Показать ещё ${P2PScenario.getAllScenarios().length - P2PScenario.getTopScenarios().length} сценариев',
+                      '❤️ Выбрано сценариев: ${_likedScenarios.length}',
                       style: AppTextStyles.body.copyWith(
-                        color: AppColors.primaryPurple,
+                        color: AppColors.success,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ).animate(delay: 600.ms).fadeIn()
-                else
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        showAllScenarios = false;
-                      });
-                    },
-                    child: Text(
-                      'Скрыть дополнительные сценарии',
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.primaryPurple,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ).animate().fadeIn(),
+                  ).animate().fadeIn().scale(),
 
                 const SizedBox(height: 30),
 
                 // Start button
-                Container(
-                  width: double.infinity,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    gradient: selectedScenario != null
-                        ? AppGradients.primaryGradient
-                        : LinearGradient(
-                            colors: [
-                              AppColors.textSecondary.withOpacity(0.3),
-                              AppColors.textSecondary.withOpacity(0.2),
-                            ],
-                          ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: selectedScenario != null
-                        ? [
-                            BoxShadow(
-                              color: AppColors.primaryPurple.withOpacity(0.4),
-                              blurRadius: 30,
-                              spreadRadius: 5,
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
+                if (_likedScenarios.isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      gradient: AppGradients.primaryGradient,
                       borderRadius: BorderRadius.circular(24),
-                      onTap: selectedScenario != null
-                          ? () {
-                              // TODO: Start matching
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Ищем партнера для: ${selectedScenario!.title}',
-                                  ),
-                                  backgroundColor: AppColors.success,
-                                ),
-                              );
-                            }
-                          : null,
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.casino,
-                              size: 64,
-                              color: selectedScenario != null
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.3),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              selectedScenario != null
-                                  ? 'Начать: ${selectedScenario!.emoji}'
-                                  : 'Выбери сценарий',
-                              style: AppTextStyles.h1.copyWith(
-                                fontSize: 28,
-                                color: selectedScenario != null
-                                    ? Colors.white
-                                    : Colors.white.withOpacity(0.4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primaryPurple.withOpacity(0.4),
+                          blurRadius: 30,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(24),
+                        onTap: () {
+                          // TODO: Start matching
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Ищем партнера для практики ${_likedScenarios.length} сценариев',
                               ),
-                              textAlign: TextAlign.center,
+                              backgroundColor: AppColors.success,
                             ),
-                            if (selectedScenario != null) ...[
+                          );
+                        },
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.casino,
+                                size: 64,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Начать сессию',
+                                style: AppTextStyles.h1.copyWith(
+                                  fontSize: 28,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                               const SizedBox(height: 8),
                               Text(
-                                selectedScenario!.title,
+                                '${_likedScenarios.length} ${_getScenarioWord(_likedScenarios.length)}',
                                 style: AppTextStyles.body.copyWith(
                                   color: Colors.white.withOpacity(0.9),
                                 ),
                               ),
                             ],
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-                    .animate(delay: 700.ms)
-                    .fadeIn()
-                    .scale(begin: const Offset(0.9, 0.9)),
+                  )
+                      .animate(delay: 700.ms)
+                      .fadeIn()
+                      .scale(begin: const Offset(0.9, 0.9)),
 
                 const SizedBox(height: 24),
 
@@ -522,5 +482,15 @@ class _P2PScreenState extends State<P2PScreen> {
         ),
       );
     }).toList();
+  }
+
+  String _getScenarioWord(int count) {
+    if (count % 10 == 1 && count % 100 != 11) {
+      return 'сценарий';
+    } else if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) {
+      return 'сценария';
+    } else {
+      return 'сценариев';
+    }
   }
 }

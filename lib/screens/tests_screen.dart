@@ -133,7 +133,7 @@ class _TestsScreenState extends State<TestsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Hello, Moss!',
+                        'Привет, Moss!',
                         style: AppTextStyles.h1,
                       ).animate().fadeIn().slideX(begin: -0.2, end: 0),
                     ],
@@ -164,7 +164,7 @@ class _TestsScreenState extends State<TestsScreen> {
                         shadowColor: const Color(0xFFFF6B6B).withOpacity(0.5),
                       ),
                       child: const Text(
-                        'Play',
+                        'Играть',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
@@ -181,7 +181,7 @@ class _TestsScreenState extends State<TestsScreen> {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'What would you like to play today?',
+                    'Во что хотите поиграть сегодня?',
                     style: AppTextStyles.body,
                   ),
                 ).animate(delay: 150.ms).fadeIn(),
@@ -249,7 +249,7 @@ class _TestsScreenState extends State<TestsScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        '${test.duration} Questions',
+                                        '${test.duration} вопросов',
                                         style: AppTextStyles.caption.copyWith(
                                           color: Colors.white.withOpacity(0.8),
                                         ),
@@ -272,7 +272,7 @@ class _TestsScreenState extends State<TestsScreen> {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Unfinished Games',
+                    'Незавершенные игры',
                     style: AppTextStyles.h2,
                   ),
                 ).animate(delay: 500.ms).fadeIn(),
