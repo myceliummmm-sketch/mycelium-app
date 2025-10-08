@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../models/activity_model.dart';
+import '../models/metaskill_detailed.dart';
+import '../widgets/metaskill_detail_modal.dart';
+import '../widgets/myc_coin_icon.dart';
 
 class AIScreen extends StatelessWidget {
   const AIScreen({super.key});
@@ -117,9 +120,13 @@ class AIScreen extends StatelessWidget {
                             .fadeIn(duration: 1000.ms)
                             .fadeOut(duration: 1000.ms),
                         const SizedBox(width: 8),
-                        const Text(
-                          'Команда AI Mycelium следит за вашим ростом',
-                          style: AppTextStyles.bodySecondary,
+                        Expanded(
+                          child: Text(
+                            'AI Mycelium комментирует ваши активности и развитие',
+                            style: AppTextStyles.bodySecondary.copyWith(fontSize: 13),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ).animate().fadeIn(delay: 100.ms),
@@ -213,7 +220,7 @@ class AIScreen extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _buildMetadataBadges(activity.metadata!),
+                children: _buildMetadataBadges(context, activity.metadata!),
               ),
             ],
 
@@ -351,7 +358,7 @@ class AIScreen extends StatelessWidget {
         .slideY(begin: 0.1, end: 0);
   }
 
-  List<Widget> _buildMetadataBadges(Map<String, dynamic> metadata) {
+  List<Widget> _buildMetadataBadges(BuildContext context, Map<String, dynamic> metadata) {
     List<Widget> badges = [];
 
     if (metadata.containsKey('tokens')) {
@@ -368,7 +375,7 @@ class AIScreen extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.token, size: 12, color: AppColors.warning),
+              const MycCoinIcon(size: 12),
               const SizedBox(width: 4),
               Text(
                 '+${metadata['tokens']} MYC',
@@ -497,20 +504,31 @@ class AIScreen extends StatelessWidget {
       final metaskills = metadata['metaskills'] as List;
       for (var skill in metaskills) {
         badges.add(
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.primaryPurple.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: AppColors.primaryPurple.withOpacity(0.3),
+          GestureDetector(
+            onTap: () {
+              // Find and show metaskill detail
+              final allSkills = MetaskillDetailed.getAll16Skills();
+              final matchedSkill = allSkills.firstWhere(
+                (s) => s.title == skill,
+                orElse: () => allSkills.first,
+              );
+              MetaskillDetailModal.show(context, matchedSkill);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.primaryPurple.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: AppColors.primaryPurple.withOpacity(0.3),
+                ),
               ),
-            ),
-            child: Text(
-              skill,
-              style: AppTextStyles.caption.copyWith(
-                color: AppColors.primaryPurple,
-                fontWeight: FontWeight.w700,
+              child: Text(
+                skill,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.primaryPurple,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),

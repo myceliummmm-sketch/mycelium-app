@@ -45,7 +45,7 @@ class OnboardingScreen extends StatelessWidget {
       onSkip: () => _onIntroEnd(context),
       showSkipButton: true,
       skip: const Text(
-        'Пропустить',
+        'Пропус­тить',
         style: TextStyle(
           color: AppColors.primaryPurple,
           fontWeight: FontWeight.w600,

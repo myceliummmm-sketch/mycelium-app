@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'dart:math' as math;
 import '../theme/app_theme.dart';
 import '../config/app_version.dart';
+import '../widgets/myc_coin_icon.dart';
 
 class CommunityScreen extends StatelessWidget {
   const CommunityScreen({super.key});
@@ -142,32 +143,36 @@ class CommunityScreen extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            width: 60,
-                            height: 60,
+                            width: 50,
+                            height: 50,
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(14),
                             ),
                             child: const Center(
-                              child: Text('🎙️', style: TextStyle(fontSize: 32)),
+                              child: Text('🎙️', style: TextStyle(fontSize: 28)),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'Еженедельный созвон',
-                                  style: AppTextStyles.h2.copyWith(fontSize: 20),
+                                  style: AppTextStyles.h2.copyWith(fontSize: 18),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 6),
+                                const SizedBox(height: 4),
                                 Text(
-                                  'С основателем проекта',
+                                  'С основателем',
                                   style: AppTextStyles.body.copyWith(
                                     color: Colors.white.withOpacity(0.9),
-                                    fontSize: 15,
+                                    fontSize: 14,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -187,28 +192,36 @@ class CommunityScreen extends StatelessWidget {
                               children: [
                                 const Icon(
                                   Icons.calendar_today,
-                                  size: 18,
+                                  size: 16,
                                   color: Colors.white,
                                 ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  'Каждую пятницу, 18:00 МСК',
-                                  style: AppTextStyles.body.copyWith(fontSize: 15),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Каждую пятницу, 18:00 МСК',
+                                    style: AppTextStyles.body.copyWith(fontSize: 13),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 10),
                             Row(
                               children: [
                                 const Icon(
                                   Icons.people,
-                                  size: 18,
+                                  size: 16,
                                   color: Colors.white,
                                 ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  '23 участника уже записались',
-                                  style: AppTextStyles.body.copyWith(fontSize: 15),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    '23 участника записались',
+                                    style: AppTextStyles.body.copyWith(fontSize: 13),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ],
                             ),
@@ -217,7 +230,7 @@ class CommunityScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Container(
-                        padding: const EdgeInsets.all(14),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                         decoration: BoxDecoration(
                           color: AppColors.warning.withOpacity(0.25),
                           borderRadius: BorderRadius.circular(10),
@@ -229,13 +242,14 @@ class CommunityScreen extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('🪙', style: TextStyle(fontSize: 24)),
-                            const SizedBox(width: 10),
+                            const MycCoinIcon(size: 20),
+                            const SizedBox(width: 8),
                             Text(
                               'Стоимость: 50 MYC',
                               style: AppTextStyles.h3.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w800,
+                                fontSize: 15,
                               ),
                             ),
                           ],
@@ -250,7 +264,7 @@ class CommunityScreen extends StatelessWidget {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -258,7 +272,7 @@ class CommunityScreen extends StatelessWidget {
                           child: Text(
                             'Купить билет 🎫',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.w800,
                               color: AppColors.primaryPurple,
                             ),
@@ -820,7 +834,7 @@ class CommunityScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Text('🪙', style: TextStyle(fontSize: 16)),
+                const MycCoinIcon(size: 16),
                 const SizedBox(width: 4),
                 Text(
                   '+$mycAmount',

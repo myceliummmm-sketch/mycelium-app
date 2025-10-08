@@ -164,33 +164,34 @@ class _OnboardingQuizScreenState extends State<OnboardingQuizScreen> {
 
               // Question content
               Expanded(
-                child: SingleChildScrollView(
+                child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 20),
-
                       // Emoji
                       Text(
                         currentQuestion.emoji,
-                        style: const TextStyle(fontSize: 80),
+                        style: const TextStyle(fontSize: 60),
                       )
                           .animate(key: ValueKey(currentQuestionIndex))
                           .scale(duration: 500.ms, curve: Curves.elasticOut),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
 
                       // Question
                       Text(
                         currentQuestion.question,
-                        style: AppTextStyles.h1.copyWith(fontSize: 28),
+                        style: AppTextStyles.h1.copyWith(fontSize: 22),
                         textAlign: TextAlign.center,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       )
                           .animate(key: ValueKey('q_$currentQuestionIndex'))
                           .fadeIn(delay: 100.ms)
                           .slideY(begin: 0.2, end: 0),
 
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 24),
 
                       // Options
                       ...currentQuestion.options.asMap().entries.map((entry) {
@@ -199,7 +200,7 @@ class _OnboardingQuizScreenState extends State<OnboardingQuizScreen> {
                         final isSelected = answers[currentQuestion.id] == option.id;
 
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 16),
+                          margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
                             gradient: isSelected
                                 ? AppGradients.primaryGradient
@@ -207,7 +208,7 @@ class _OnboardingQuizScreenState extends State<OnboardingQuizScreen> {
                             color: isSelected
                                 ? null
                                 : AppColors.cardBackground,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: isSelected
                                   ? AppColors.primaryPurple
@@ -228,23 +229,25 @@ class _OnboardingQuizScreenState extends State<OnboardingQuizScreen> {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () => _selectOption(option),
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(14),
                               child: Padding(
-                                padding: const EdgeInsets.all(20),
+                                padding: const EdgeInsets.all(14),
                                 child: Row(
                                   children: [
                                     Text(
                                       option.emoji,
-                                      style: const TextStyle(fontSize: 32),
+                                      style: const TextStyle(fontSize: 24),
                                     ),
-                                    const SizedBox(width: 16),
+                                    const SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
                                         option.text,
                                         style: AppTextStyles.body.copyWith(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.w600,
                                         ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     if (isSelected)

@@ -58,112 +58,132 @@ class HomeScreen extends StatelessWidget {
               children: [
                 // Compact header card (MYC + Level + Trust Score)
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(14),
                   decoration: AppDecorations.gradientCard(
                     AppGradients.primaryGradient,
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
-                      // MYC Tokens
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'MYC',
-                              style: AppTextStyles.caption,
-                            ),
-                            Text(
-                              '${user.mycTokens}',
-                              style: AppTextStyles.h2.copyWith(fontSize: 24),
-                            ),
-                          ],
-                        ),
+                      // Top row: MYC tokens
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'MYC',
+                            style: AppTextStyles.caption,
+                          ),
+                          Text(
+                            '${user.mycTokens}',
+                            style: AppTextStyles.h2.copyWith(fontSize: 26),
+                          ),
+                        ],
                       ),
-
-                      // Level
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              userLevel.tier.emoji,
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Ур. ${user.level}',
-                              style: AppTextStyles.body.copyWith(
-                                fontWeight: FontWeight.w700,
+                      const SizedBox(height: 12),
+                      // Bottom row: Level, Shield, Streak
+                      Row(
+                        children: [
+                          // Level
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => _showLevelDetail(context, user, userLevel),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      userLevel.tier.emoji,
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${user.level}',
+                                      style: AppTextStyles.body.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      // Trust Score
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            const Text(
-                              '🛡️',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              '${user.trustScore.toInt()}',
-                              style: AppTextStyles.body.copyWith(
-                                fontWeight: FontWeight.w700,
+                          ),
+                          const SizedBox(width: 8),
+                          // Trust Score
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => _showTrustScoreDetail(context, user),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      '🛡️',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${user.trustScore.toInt()}',
+                                      style: AppTextStyles.body.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      // Streak
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            const Text(
-                              '🔥',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              '${user.streakDays}',
-                              style: AppTextStyles.body.copyWith(
-                                fontWeight: FontWeight.w700,
+                          ),
+                          const SizedBox(width: 8),
+                          // Streak
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => _showStreakDetail(context, user),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      '🔥',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${user.streakDays}',
+                                      style: AppTextStyles.body.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -395,6 +415,332 @@ class HomeScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Text(label, style: AppTextStyles.caption),
       ],
+    );
+  }
+
+  void _showLevelDetail(BuildContext context, User user, UserLevel userLevel) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.75,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1A1F3A), AppColors.background],
+          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Text(
+                        userLevel.tier.emoji,
+                        style: const TextStyle(fontSize: 80),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Text(
+                        'Уровень ${user.level}',
+                        style: AppTextStyles.h1,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Center(
+                      child: Text(
+                        userLevel.tier.name,
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.primaryPurple,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: AppDecorations.cardBackground,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Прогресс', style: AppTextStyles.h3),
+                          const SizedBox(height: 12),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: LinearProgressIndicator(
+                              value: user.levelProgress,
+                              minHeight: 12,
+                              backgroundColor: Colors.white.withOpacity(0.1),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                AppColors.primaryPurple,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${(user.levelProgress * 100).toInt()}% до уровня ${user.level + 1}',
+                            style: AppTextStyles.caption,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text('Как повысить уровень?', style: AppTextStyles.h3),
+                    const SizedBox(height: 12),
+                    _buildLevelTip('Проходите тесты', '+10-50 XP'),
+                    _buildLevelTip('P2P звонки', '+20-100 XP'),
+                    _buildLevelTip('Ежедневная активность', '+5 XP'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ).animate().fadeIn().slideY(begin: 0.1, end: 0),
+    );
+  }
+
+  void _showTrustScoreDetail(BuildContext context, User user) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.75,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1A1F3A), AppColors.background],
+          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Center(
+                      child: Text('🛡️', style: TextStyle(fontSize: 80)),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Text(
+                        'Trust Score: ${user.trustScore.toInt()}',
+                        style: AppTextStyles.h1,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: AppDecorations.cardBackground,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Что это такое?', style: AppTextStyles.h3),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Trust Score — это показатель доверия в комьюнити. Он растет когда вы активны, честны и помогаете другим.',
+                            style: AppTextStyles.body,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text('Как повысить Trust Score?', style: AppTextStyles.h3),
+                    const SizedBox(height: 12),
+                    _buildLevelTip('Регулярная активность', '+1-3'),
+                    _buildLevelTip('Положительные отзывы', '+5-10'),
+                    _buildLevelTip('Приглашение друзей', '+5'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ).animate().fadeIn().slideY(begin: 0.1, end: 0),
+    );
+  }
+
+  void _showStreakDetail(BuildContext context, User user) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.75,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1A1F3A), AppColors.background],
+          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Center(
+                      child: Text('🔥', style: TextStyle(fontSize: 80)),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Text(
+                        '${user.streakDays} дней подряд',
+                        style: AppTextStyles.h1,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Center(
+                      child: Text(
+                        'Отличная серия!',
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.warning,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: AppDecorations.cardBackground,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Streak — это важно!', style: AppTextStyles.h3),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Ежедневная активность помогает формировать привычки и достигать целей быстрее.',
+                            style: AppTextStyles.body,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text('Награды за streak', style: AppTextStyles.h3),
+                    const SizedBox(height: 12),
+                    _buildStreakReward(7, '7 дней', 'Бронзовый значок'),
+                    _buildStreakReward(30, '30 дней', 'Серебряный значок'),
+                    _buildStreakReward(100, '100 дней', 'Золотой значок'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ).animate().fadeIn().slideY(begin: 0.1, end: 0),
+    );
+  }
+
+  Widget _buildLevelTip(String title, String reward) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: AppDecorations.cardBackground,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(title, style: AppTextStyles.body),
+          ),
+          Text(
+            reward,
+            style: AppTextStyles.body.copyWith(
+              color: AppColors.success,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStreakReward(int days, String milestone, String reward) {
+    final isUnlocked = days <= 12; // Mock - compare with actual streak
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isUnlocked
+            ? AppColors.warning.withOpacity(0.1)
+            : Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isUnlocked
+              ? AppColors.warning.withOpacity(0.3)
+              : Colors.white.withOpacity(0.1),
+        ),
+      ),
+      child: Row(
+        children: [
+          Text(
+            isUnlocked ? '✅' : '🔒',
+            style: const TextStyle(fontSize: 24),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  milestone,
+                  style: AppTextStyles.caption.copyWith(
+                    color: isUnlocked ? AppColors.warning : AppColors.textSecondary,
+                  ),
+                ),
+                Text(
+                  reward,
+                  style: AppTextStyles.body.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
