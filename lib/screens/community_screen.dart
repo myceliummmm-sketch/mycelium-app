@@ -5,8 +5,15 @@ import '../theme/app_theme.dart';
 import '../config/app_version.dart';
 import '../widgets/myc_coin_icon.dart';
 
-class CommunityScreen extends StatelessWidget {
+class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
+
+  @override
+  State<CommunityScreen> createState() => _CommunityScreenState();
+}
+
+class _CommunityScreenState extends State<CommunityScreen> {
+  bool _isMyceliumExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,75 +49,162 @@ class CommunityScreen extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // Your Mycelium card
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: AppDecorations.gradientCard(
-                    AppGradients.primaryGradient,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Ваш мицелий',
-                            style: AppTextStyles.h2,
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
+                // Your Mycelium card - expandable
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isMyceliumExpanded = !_isMyceliumExpanded;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    padding: const EdgeInsets.all(20),
+                    decoration: AppDecorations.gradientCard(
+                      AppGradients.primaryGradient,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Ваш мицелий',
+                              style: AppTextStyles.h2,
                             ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(20),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text(
+                                    '7/8',
+                                    style: AppTextStyles.body,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  _isMyceliumExpanded
+                                      ? Icons.expand_less
+                                      : Icons.expand_more,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ],
                             ),
-                            child: const Text(
-                              '7/8',
-                              style: AppTextStyles.body,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'друзей уже в мицелии — вы растете!',
-                        style: AppTextStyles.body,
-                      ),
-                      const SizedBox(height: 16),
-                      // Friend avatars
-                      Row(
-                        children: [
-                          _buildAvatar('assets/avatar1.png', true),
-                          _buildAvatar('assets/avatar2.png', true),
-                          _buildAvatar('assets/avatar3.png', true),
-                          Container(
-                            width: 36,
-                            height: 36,
-                            margin: const EdgeInsets.only(left: -8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppColors.primaryPurple,
-                                width: 2,
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'друзей уже в мицелии — вы растете!',
+                          style: AppTextStyles.body,
+                        ),
+                        const SizedBox(height: 16),
+                        // Friend avatars
+                        Row(
+                          children: [
+                            _buildAvatar('assets/avatar1.png', true),
+                            _buildAvatar('assets/avatar2.png', true),
+                            _buildAvatar('assets/avatar3.png', true),
+                            Container(
+                              width: 36,
+                              height: 36,
+                              margin: const EdgeInsets.only(left: -8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.primaryPurple,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  '+3',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
-                            child: const Center(
-                              child: Text(
-                                '+3',
+                          ],
+                        ),
+                        // Expanded content - invite friends
+                        if (_isMyceliumExpanded) ...[
+                          const SizedBox(height: 24),
+                          const Divider(color: Colors.white24, height: 1),
+                          const SizedBox(height: 20),
+                          const Text(
+                            '🤝 Пригласить друзей',
+                            style: AppTextStyles.h3,
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Приглашайте друзей и получайте награды. Каждый приглашенный друг повышает ваш Trust Score и открывает новые возможности.',
+                            style: AppTextStyles.body,
+                          ),
+                          const SizedBox(height: 16),
+                          // Mycelium network visualization
+                          Center(
+                            child: CustomPaint(
+                              size: const Size(200, 180),
+                              painter: _MyceliumNetworkPainter(),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Награды за приглашения',
+                            style: AppTextStyles.h3,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildRewardItem('1 друг', 'Respect +5', 5, isCompleted: true),
+                          _buildRewardItem('3 друга', 'Trust Badge', 15, isCompleted: true),
+                          _buildRewardItem(
+                            '5 друзей',
+                            'Приватный канал',
+                            30,
+                            isLocked: true,
+                          ),
+                          _buildRewardItem(
+                            '10 друзей',
+                            'PRO статус (1 месяц)',
+                            100,
+                            isLocked: true,
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // TODO: Share invite link
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.success,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text(
+                                'Поделиться ссылкой 🔗',
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
                           ),
                         ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ).animate(delay: 150.ms).fadeIn().slideY(begin: 0.2, end: 0),
 
@@ -285,68 +379,30 @@ class CommunityScreen extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // Compact sections row
-                Row(
-                  children: [
-                    // World Map - Compact
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          _showWorldMap(context);
-                        },
-                        child: Container(
-                          height: 120,
-                          padding: const EdgeInsets.all(16),
-                          decoration: AppDecorations.gradientCard(
-                            AppGradients.blueGradient,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('🗺️', style: TextStyle(fontSize: 32)),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Карта',
-                                style: AppTextStyles.body.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ).animate(delay: 300.ms).fadeIn().scale(begin: const Offset(0.9, 0.9)),
+                // World Map - Full width
+                GestureDetector(
+                  onTap: () {
+                    _showWorldMap(context);
+                  },
+                  child: Container(
+                    height: 120,
+                    padding: const EdgeInsets.all(16),
+                    decoration: AppDecorations.gradientCard(
+                      AppGradients.blueGradient,
                     ),
-                    const SizedBox(width: 12),
-                    // Invite Friends - Compact
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          _showInviteFriends(context);
-                        },
-                        child: Container(
-                          height: 120,
-                          padding: const EdgeInsets.all(16),
-                          decoration: AppDecorations.gradientCard(
-                            AppGradients.successGradient,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('🤝', style: TextStyle(fontSize: 32)),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Пригласить',
-                                style: AppTextStyles.body.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('🗺️', style: TextStyle(fontSize: 40)),
+                        const SizedBox(width: 16),
+                        Text(
+                          'Карта резидентов',
+                          style: AppTextStyles.h2.copyWith(fontSize: 22),
                         ),
-                      ).animate(delay: 350.ms).fadeIn().scale(begin: const Offset(0.9, 0.9)),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ).animate(delay: 300.ms).fadeIn().scale(begin: const Offset(0.9, 0.9)),
 
                 const SizedBox(height: 24),
 
@@ -439,26 +495,47 @@ class CommunityScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    // Mock world map with pins
+                    // Interactive world map with cities
                     Container(
-                      height: 300,
+                      height: 350,
                       decoration: BoxDecoration(
-                        color: AppColors.primaryBlue.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primaryBlue.withOpacity(0.15),
+                            AppColors.primaryPurple.withOpacity(0.1),
+                          ],
+                        ),
                         border: Border.all(
                           color: AppColors.primaryBlue.withOpacity(0.3),
                           width: 2,
                         ),
                       ),
-                      child: Stack(
-                        children: [
-                          // Mock pins with TG user avatars
-                          _buildMapPin(30, 40, '👤', 'Анна К.', 'Москва'),
-                          _buildMapPin(60, 30, '👨', 'Дмитрий С.', 'Питер'),
-                          _buildMapPin(45, 55, '👩', 'Мария П.', 'Казань'),
-                          _buildMapPin(70, 45, '🧑', 'Алексей В.', 'Екб'),
-                          _buildMapPin(25, 65, '👨‍🦱', 'Иван М.', 'Сочи'),
-                        ],
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: Stack(
+                          children: [
+                            // World map background
+                            CustomPaint(
+                              painter: _WorldMapPainter(),
+                              size: const Size(double.infinity, 350),
+                            ),
+                            // City markers with user counts
+                            _buildCityMarker(165, 80, 'Москва', 247),
+                            _buildCityMarker(155, 70, 'Питер', 89),
+                            _buildCityMarker(100, 180, 'Нью-Йорк', 156),
+                            _buildCityMarker(250, 200, 'Сингапур', 45),
+                            _buildCityMarker(200, 140, 'Дубай', 67),
+                            _buildCityMarker(135, 95, 'Берлин', 123),
+                            // Connection lines between cities
+                            CustomPaint(
+                              painter: _ConnectionLinesPainter(),
+                              size: const Size(double.infinity, 350),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -512,156 +589,75 @@ class CommunityScreen extends StatelessWidget {
     );
   }
 
-  void _showInviteFriends(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF1A1F3A), AppColors.background],
-          ),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            // Handle bar
-            Container(
-              margin: const EdgeInsets.only(top: 12, bottom: 8),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Text('🤝', style: TextStyle(fontSize: 40)),
-                        const SizedBox(width: 16),
-                        Text(
-                          'Пригласить друзей',
-                          style: AppTextStyles.h1,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: AppDecorations.cardBackground,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Растите свой мицелий',
-                            style: AppTextStyles.h3,
-                          ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            'Приглашайте друзей и получайте награды. Каждый приглашенный друг повышает ваш Trust Score и открывает новые возможности.',
-                            style: AppTextStyles.body,
-                          ),
-                          const SizedBox(height: 20),
-                          // Mycelium network visualization
-                          Center(
-                            child: CustomPaint(
-                              size: const Size(200, 180),
-                              painter: _MyceliumNetworkPainter(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Text(
-                      'Награды за приглашения',
-                      style: AppTextStyles.h3,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    _buildRewardItem('1 друг', 'Respect +5', 5, isCompleted: true),
-                    _buildRewardItem('3 друга', 'Trust Badge', 15, isCompleted: true),
-                    _buildRewardItem(
-                      '5 друзей',
-                      'Приватный канал',
-                      30,
-                      isLocked: true,
-                    ),
-                    _buildRewardItem(
-                      '10 друзей',
-                      'PRO статус (1 месяц)',
-                      100,
-                      isLocked: true,
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: Share invite link
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.success,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Поделиться ссылкой 🔗',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ).animate().fadeIn().slideY(begin: 0.1, end: 0),
-    );
-  }
-
-  Widget _buildMapPin(double left, double top, String emoji, String name, String city) {
+  Widget _buildCityMarker(double left, double top, String cityName, int userCount) {
     return Positioned(
       left: left,
       top: top,
       child: GestureDetector(
-        onTap: () {},
-        child: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            gradient: AppGradients.primaryGradient,
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 2),
-          ),
-          child: Center(
-            child: Text(emoji, style: const TextStyle(fontSize: 20)),
-          ),
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$cityName: $userCount участников'),
+              duration: const Duration(seconds: 2),
+              backgroundColor: AppColors.primaryPurple,
+            ),
+          );
+        },
+        child: Column(
+          children: [
+            // Pulsing city marker
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: AppGradients.primaryGradient,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryPurple.withOpacity(0.5),
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  userCount.toString(),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ).animate(onPlay: (controller) => controller.repeat()).scale(
+                  duration: 2000.ms,
+                  begin: const Offset(0.9, 0.9),
+                  end: const Offset(1.1, 1.1),
+                ),
+            const SizedBox(height: 4),
+            // City label
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppColors.background.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: AppColors.primaryBlue.withOpacity(0.5),
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                cityName,
+                style: const TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -904,4 +900,143 @@ class _MyceliumNetworkPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_MyceliumNetworkPainter oldDelegate) => false;
+}
+
+// World Map Painter with continent contours
+class _WorldMapPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.primaryBlue.withOpacity(0.2)
+      ..style = PaintingStyle.fill;
+
+    final borderPaint = Paint()
+      ..color = AppColors.primaryBlue.withOpacity(0.4)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+
+    // Simplified continent shapes (approximate)
+    // Europe
+    final europePath = Path()
+      ..moveTo(size.width * 0.48, size.height * 0.25)
+      ..lineTo(size.width * 0.52, size.height * 0.22)
+      ..lineTo(size.width * 0.56, size.height * 0.25)
+      ..lineTo(size.width * 0.54, size.height * 0.35)
+      ..lineTo(size.width * 0.48, size.height * 0.35)
+      ..close();
+    canvas.drawPath(europePath, paint);
+    canvas.drawPath(europePath, borderPaint);
+
+    // Asia
+    final asiaPath = Path()
+      ..moveTo(size.width * 0.58, size.height * 0.20)
+      ..lineTo(size.width * 0.75, size.height * 0.18)
+      ..lineTo(size.width * 0.82, size.height * 0.30)
+      ..lineTo(size.width * 0.78, size.height * 0.45)
+      ..lineTo(size.width * 0.70, size.height * 0.50)
+      ..lineTo(size.width * 0.58, size.height * 0.38)
+      ..close();
+    canvas.drawPath(asiaPath, paint);
+    canvas.drawPath(asiaPath, borderPaint);
+
+    // North America
+    final northAmericaPath = Path()
+      ..moveTo(size.width * 0.15, size.height * 0.20)
+      ..lineTo(size.width * 0.28, size.height * 0.18)
+      ..lineTo(size.width * 0.35, size.height * 0.28)
+      ..lineTo(size.width * 0.32, size.height * 0.42)
+      ..lineTo(size.width * 0.22, size.height * 0.48)
+      ..lineTo(size.width * 0.12, size.height * 0.38)
+      ..close();
+    canvas.drawPath(northAmericaPath, paint);
+    canvas.drawPath(northAmericaPath, borderPaint);
+
+    // South America
+    final southAmericaPath = Path()
+      ..moveTo(size.width * 0.28, size.height * 0.50)
+      ..lineTo(size.width * 0.35, size.height * 0.48)
+      ..lineTo(size.width * 0.34, size.height * 0.68)
+      ..lineTo(size.width * 0.30, size.height * 0.75)
+      ..lineTo(size.width * 0.26, size.height * 0.70)
+      ..close();
+    canvas.drawPath(southAmericaPath, paint);
+    canvas.drawPath(southAmericaPath, borderPaint);
+
+    // Africa
+    final africaPath = Path()
+      ..moveTo(size.width * 0.48, size.height * 0.38)
+      ..lineTo(size.width * 0.58, size.height * 0.40)
+      ..lineTo(size.width * 0.56, size.height * 0.65)
+      ..lineTo(size.width * 0.50, size.height * 0.68)
+      ..lineTo(size.width * 0.46, size.height * 0.58)
+      ..close();
+    canvas.drawPath(africaPath, paint);
+    canvas.drawPath(africaPath, borderPaint);
+
+    // Australia
+    final australiaPath = Path()
+      ..moveTo(size.width * 0.75, size.height * 0.60)
+      ..lineTo(size.width * 0.85, size.height * 0.58)
+      ..lineTo(size.width * 0.88, size.height * 0.68)
+      ..lineTo(size.width * 0.82, size.height * 0.72)
+      ..lineTo(size.width * 0.74, size.height * 0.68)
+      ..close();
+    canvas.drawPath(australiaPath, paint);
+    canvas.drawPath(australiaPath, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(_WorldMapPainter oldDelegate) => false;
+}
+
+// Connection lines between cities
+class _ConnectionLinesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final linePaint = Paint()
+      ..color = AppColors.primaryPurple.withOpacity(0.15)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+
+    final dashPaint = Paint()
+      ..color = AppColors.primaryBlue.withOpacity(0.25)
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+
+    // City positions (matching the markers in the Stack)
+    final moscow = const Offset(165, 80);
+    final petersburg = const Offset(155, 70);
+    final newYork = const Offset(100, 180);
+    final singapore = const Offset(250, 200);
+    final dubai = const Offset(200, 140);
+    final berlin = const Offset(135, 95);
+
+    // Draw connection lines
+    _drawDashedLine(canvas, moscow, petersburg, dashPaint);
+    _drawDashedLine(canvas, moscow, dubai, dashPaint);
+    _drawDashedLine(canvas, moscow, berlin, dashPaint);
+    _drawDashedLine(canvas, berlin, newYork, dashPaint);
+    _drawDashedLine(canvas, dubai, singapore, dashPaint);
+    _drawDashedLine(canvas, newYork, dubai, dashPaint);
+  }
+
+  void _drawDashedLine(Canvas canvas, Offset start, Offset end, Paint paint) {
+    const dashWidth = 5.0;
+    const dashSpace = 3.0;
+    double distance = (end - start).distance;
+    double traveled = 0;
+
+    while (traveled < distance) {
+      final startPoint = Offset.lerp(start, end, traveled / distance)!;
+      traveled += dashWidth;
+      final endPoint = traveled > distance
+          ? end
+          : Offset.lerp(start, end, traveled / distance)!;
+      canvas.drawLine(startPoint, endPoint, paint);
+      traveled += dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ConnectionLinesPainter oldDelegate) => false;
 }
