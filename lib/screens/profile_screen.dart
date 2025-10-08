@@ -85,96 +85,92 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   Widget _buildMCodeCard() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         gradient: AppGradients.primaryGradient,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryPurple.withOpacity(0.35),
-            blurRadius: 20,
-            spreadRadius: 2,
+            color: AppColors.primaryPurple.withOpacity(0.3),
+            blurRadius: 12,
+            spreadRadius: 1,
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          // Header with icon and info
-          Row(
-            children: [
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Text('🔮', style: TextStyle(fontSize: 52)),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'СТРАТЕГ-ВИЗИОНЕР',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Level 12 • 3,450 XP • Trust Score: 87',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.white.withOpacity(0.95),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          // Compact icon
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: Text('🔮', style: TextStyle(fontSize: 28)),
+            ),
           ),
-
-          const SizedBox(height: 14),
-
-          // Personality chips
-          Row(
-            children: [
-              _buildPersonalityChip('DISC', 'D/I'),
-              const SizedBox(width: 8),
-              _buildPersonalityChip('MBTI', 'ENTJ'),
-              const SizedBox(width: 8),
-              _buildPersonalityChip('ENNEAGRAM', 'Type 3'),
-            ],
+          const SizedBox(width: 12),
+          // Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'СТРАТЕГ-ВИЗИОНЕР',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Level 12 • Trust: 87',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.white.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
           ),
-
-          const SizedBox(height: 14),
-
-          // Buttons
+          // Compact badges
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: _buildMCodeButton('📤 Share', () {}),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildMCodeButton('🍄 245 MYC', () {}),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildMCodeButton('💎 Pro', () {}),
-              ),
+              _buildCompactBadge('D/I'),
+              const SizedBox(width: 4),
+              _buildCompactBadge('ENTJ'),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCompactBadge(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
       ),
     );
   }
