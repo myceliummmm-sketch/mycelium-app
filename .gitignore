@@ -54,3 +54,6 @@ server/.env
 render-service.json
 DEPLOYMENT_GUIDE.md
 .vercel
+
+# Local Netlify folder
+.netlify

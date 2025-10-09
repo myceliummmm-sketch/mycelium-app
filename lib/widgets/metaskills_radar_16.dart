@@ -95,9 +95,6 @@ class _MetaskillsRadar16Painter extends CustomPainter {
     // Draw background grid circles
     _drawGridCircles(canvas, center, radius);
 
-    // Draw domain labels
-    _drawDomainLabels(canvas, center, radius);
-
     // Draw axis lines and labels
     for (int i = 0; i < skills.length; i++) {
       _drawAxis(canvas, center, radius, i, angleStep);
@@ -123,96 +120,6 @@ class _MetaskillsRadar16Painter extends CustomPainter {
     }
   }
 
-  void _drawDomainLabels(Canvas canvas, Offset center, double radius) {
-    // Group skills by domain to find their angular positions
-    final domains = [
-      MetaskillDomain.cognitive,
-      MetaskillDomain.social,
-      MetaskillDomain.emotional,
-      MetaskillDomain.practical,
-    ];
-
-    for (var domain in domains) {
-      // Find all skills in this domain
-      final domainSkills = <int>[];
-      for (int i = 0; i < skills.length; i++) {
-        if (skills[i].domain == domain) {
-          domainSkills.add(i);
-        }
-      }
-
-      if (domainSkills.isEmpty) continue;
-
-      // Calculate the center angle for this domain group
-      final angleStep = 2 * math.pi / skills.length;
-      final firstIndex = domainSkills.first;
-      final lastIndex = domainSkills.last;
-      final firstAngle = -math.pi / 2 + firstIndex * angleStep;
-      final lastAngle = -math.pi / 2 + lastIndex * angleStep;
-      final centerAngle = (firstAngle + lastAngle) / 2;
-
-      // Position label outside the radar
-      final labelDistance = radius + 55;
-      final labelX = center.dx + labelDistance * math.cos(centerAngle);
-      final labelY = center.dy + labelDistance * math.sin(centerAngle);
-
-      // Draw background pill for label
-      final pillPaint = Paint()
-        ..color = domain.color.withOpacity(0.15)
-        ..style = PaintingStyle.fill;
-
-      final textSpan = TextSpan(
-        children: [
-          TextSpan(
-            text: '${domain.emoji} ',
-            style: const TextStyle(fontSize: 14),
-          ),
-          TextSpan(
-            text: domain.title,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: domain.color,
-            ),
-          ),
-        ],
-      );
-
-      final textPainter = TextPainter(
-        text: textSpan,
-        textDirection: TextDirection.ltr,
-        textAlign: TextAlign.center,
-      );
-
-      textPainter.layout();
-
-      // Draw pill background
-      final pillRect = RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: Offset(labelX, labelY),
-          width: textPainter.width + 16,
-          height: textPainter.height + 8,
-        ),
-        const Radius.circular(12),
-      );
-
-      canvas.drawRRect(pillRect, pillPaint);
-
-      // Draw border
-      final borderPaint = Paint()
-        ..color = domain.color.withOpacity(0.4)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1;
-      canvas.drawRRect(pillRect, borderPaint);
-
-      // Draw text
-      textPainter.paint(
-        canvas,
-        Offset(labelX - textPainter.width / 2, labelY - textPainter.height / 2),
-      );
-    }
-  }
-
   void _drawAxis(Canvas canvas, Offset center, double radius, int index, double angleStep) {
     final angle = -math.pi / 2 + index * angleStep; // Start from top
     final end = Offset(
@@ -220,14 +127,14 @@ class _MetaskillsRadar16Painter extends CustomPainter {
       center.dy + radius * math.sin(angle),
     );
 
-    // Draw axis line with domain color
-    final skill = skills[index];
+    // Draw axis line
     final axisPaint = Paint()
-      ..color = skill.domain.color.withOpacity(0.2)
-      ..strokeWidth = 1.5;
+      ..color = Colors.white.withOpacity(0.15)
+      ..strokeWidth = 1;
     canvas.drawLine(center, end, axisPaint);
 
     // Draw label
+    final skill = skills[index];
     final labelRadius = radius + 30;
     final labelX = center.dx + labelRadius * math.cos(angle);
     final labelY = center.dy + labelRadius * math.sin(angle);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
-import '../models/p2p_scenario.dart';
+import '../models/p2p_scenario_detailed.dart';
 
 class P2PScreen extends StatefulWidget {
   const P2PScreen({super.key});
@@ -11,471 +11,827 @@ class P2PScreen extends StatefulWidget {
 }
 
 class _P2PScreenState extends State<P2PScreen> {
-  bool showAllScenarios = false;
-  bool showProList = false;
-  final List<P2PScenario> _likedScenarios = [];
-  int _currentIndex = 0;
-  List<P2PScenario> _scenarios = [];
+  int _currentCard = 0;
+  Map<int, String> _answers = {};
+  final List<P2PScenarioDetailed> _scenarios = P2PScenarioDetailed.getTopScenarios();
+  bool _showFullScenario = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _scenarios = P2PScenario.getTopScenarios();
-  }
-
-  void _handleNo() {
-    if (_currentIndex >= _scenarios.length) return;
-
-    final scenario = _scenarios[_currentIndex];
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('👋 ${scenario.title} пропущен'),
-        backgroundColor: AppColors.textSecondary,
-        duration: const Duration(seconds: 1),
-      ),
-    );
-
+  void _handleAnswer(String answer) {
     setState(() {
-      _currentIndex++;
+      _answers[_currentCard] = answer;
+      if (_currentCard < _scenarios.length - 1) {
+        _currentCard++;
+      }
     });
   }
 
-  void _handleYes() {
-    if (_currentIndex >= _scenarios.length) return;
-
-    final scenario = _scenarios[_currentIndex];
-    setState(() {
-      _likedScenarios.add(scenario);
-      _currentIndex++;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('❤️ ${scenario.title} добавлен'),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 1),
-      ),
-    );
+  void _goBack() {
+    if (_currentCard > 0) {
+      setState(() {
+        _currentCard--;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_currentCard >= _scenarios.length) {
+      return _buildSummaryView();
+    }
+
+    final scenario = _scenarios[_currentCard];
+    final currentAnswer = _answers[_currentCard];
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.background, Color(0xFF1A1F3A)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF6366F1),
+              Color(0xFF3B82F6),
+              Color(0xFF14B8A6),
+            ],
           ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          showProList = !showProList;
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        decoration: AppDecorations.glassCard,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: AppColors.success,
-                                shape: BoxShape.circle,
-                              ),
-                            )
-                                .animate(
-                                  onPlay: (controller) => controller.repeat(),
-                                )
-                                .fadeIn(duration: 1000.ms)
-                                .fadeOut(duration: 1000.ms),
-                            const SizedBox(width: 10),
-                            const Text(
-                              '247 человек онлайн',
-                              style: AppTextStyles.caption,
-                            ),
-                            const SizedBox(width: 6),
-                            Icon(
-                              showProList ? Icons.expand_less : Icons.expand_more,
-                              size: 18,
-                              color: AppColors.textSecondary,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ).animate().fadeIn(),
-
-                    const SizedBox(height: 24),
-
-                    Text(
-                      'P2P Рулетка',
-                      style: AppTextStyles.h1,
-                    ).animate(delay: 100.ms).fadeIn(),
-
-                    const SizedBox(height: 8),
-
-                    Text(
-                      'Выбери интересные сценарии',
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ).animate(delay: 150.ms).fadeIn(),
-                  ],
-                ),
-              ),
-
-              // Content
-              Expanded(
-                child: _currentIndex >= _scenarios.length
-                    ? _buildCompleteView()
-                    : _buildScenarioView(_scenarios[_currentIndex]),
-              ),
-            ],
-          ),
+          child: _showFullScenario
+              ? _buildFullScenarioView(scenario)
+              : _buildMainView(scenario, currentAnswer),
         ),
       ),
     );
   }
 
-  Widget _buildScenarioView(P2PScenario scenario) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          // Progress indicator
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildMainView(P2PScenarioDetailed scenario, String? currentAnswer) {
+    return Column(
+      children: [
+        // Header - compact
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              const Text(
+                '🍄 P2P Рулетка',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
               Text(
-                '${_currentIndex + 1} / ${_scenarios.length}',
-                style: AppTextStyles.caption.copyWith(
-                  color: AppColors.primaryPurple,
-                  fontWeight: FontWeight.w700,
+                '${_currentCard + 1}/${_scenarios.length}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
                 ),
               ),
             ],
           ),
+        ),
 
-          const SizedBox(height: 24),
-
-          // Scenario Card
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.cardBackground,
-                    AppColors.cardBackground.withOpacity(0.8),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Category badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
+        // Main Card - центральная большая карточка
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
                     decoration: BoxDecoration(
-                      color: AppColors.primaryPurple.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.primaryPurple.withOpacity(0.4),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      _getCategoryName(scenario.category),
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.primaryPurple,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Emoji
-                  Text(
-                    scenario.emoji,
-                    style: const TextStyle(fontSize: 80),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Title
-                  Text(
-                    scenario.title,
-                    style: AppTextStyles.h1.copyWith(fontSize: 24),
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Description
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Text(
-                        scenario.description,
-                        style: AppTextStyles.body.copyWith(
-                          color: AppColors.textSecondary,
-                          height: 1.5,
+                      color: const Color(0xFF1E1B4B),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 30,
+                          offset: const Offset(0, 15),
                         ),
-                        textAlign: TextAlign.center,
-                      ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Yes/No Buttons
-          Row(
-            children: [
-              // No Button
-              Expanded(
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.red.withOpacity(0.5),
-                      width: 2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.red.withOpacity(0.2),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: _handleNo,
-                      child: Center(
-                        child: Text(
-                          'НЕТ',
-                          style: AppTextStyles.h2.copyWith(
-                            color: Colors.red,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 16),
-
-              // Yes Button
-              Expanded(
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: AppGradients.successGradient,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.success.withOpacity(0.4),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: _handleYes,
-                      child: Center(
-                        child: Text(
-                          'ДА',
-                          style: AppTextStyles.h2.copyWith(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Liked scenarios count
-          if (_likedScenarios.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: AppColors.success.withOpacity(0.4),
-                  width: 1,
-                ),
-              ),
-              child: Text(
-                '❤️ Выбрано: ${_likedScenarios.length}',
-                style: AppTextStyles.body.copyWith(
-                  color: AppColors.success,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ).animate().fadeIn().scale(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCompleteView() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            '🎉',
-            style: TextStyle(fontSize: 80),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Все сценарии просмотрены!',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            _likedScenarios.isEmpty
-                ? 'Не выбрано ни одного сценария'
-                : 'Выбрано сценариев: ${_likedScenarios.length}',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white.withOpacity(0.7),
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          if (_likedScenarios.isNotEmpty) ...[
-            const SizedBox(height: 32),
-            Container(
-              width: double.infinity,
-              height: 140,
-              decoration: BoxDecoration(
-                gradient: AppGradients.primaryGradient,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryPurple.withOpacity(0.4),
-                    blurRadius: 30,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(24),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Ищем партнера для ${_likedScenarios.length} сценариев',
-                        ),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                  },
-                  child: Center(
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          Icons.casino,
-                          size: 48,
-                          color: Colors.white,
+                        // Card Header
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(24),
+                              topRight: Radius.circular(24),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(color: Colors.white.withOpacity(0.3)),
+                                      ),
+                                      child: Text(
+                                        scenario.skill,
+                                        style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(color: Colors.white.withOpacity(0.3)),
+                                      ),
+                                      child: Text(
+                                        scenario.sphere,
+                                        style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.info_outline, color: Colors.white),
+                                onPressed: () {
+                                  setState(() {
+                                    _showFullScenario = true;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Начать сессию',
-                          style: AppTextStyles.h1.copyWith(
-                            fontSize: 24,
-                            color: Colors.white,
+
+                        // Card Body
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(scenario.emoji, style: const TextStyle(fontSize: 60)),
+                                const SizedBox(height: 16),
+                                Text(
+                                  scenario.title,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 10),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF818CF8).withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: const Color(0xFF818CF8).withOpacity(0.4)),
+                                  ),
+                                  child: Text(
+                                    'Твоя роль: ${scenario.roleA.name}',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF818CF8),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                                Text(
+                                  scenario.question,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF818CF8),
+                                    height: 1.3,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  scenario.description,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white.withOpacity(0.7),
+                                    height: 1.4,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
+
+                const SizedBox(height: 24),
+
+                // Yes/No Buttons - big and beautiful
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => _handleAnswer('no'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: currentAnswer == 'no'
+                              ? const Color(0xFFEF4444)
+                              : const Color(0xFF1E1B4B),
+                          foregroundColor: currentAnswer == 'no'
+                              ? Colors.white
+                              : const Color(0xFFEF4444),
+                          minimumSize: const Size(0, 60),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: const BorderSide(color: Color(0xFFEF4444), width: 2),
+                          ),
+                          elevation: currentAnswer == 'no' ? 8 : 0,
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.close, size: 28),
+                            SizedBox(width: 8),
+                            Text(
+                              'НЕТ',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => _handleAnswer('yes'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: currentAnswer == 'yes'
+                              ? const Color(0xFF22C55E)
+                              : const Color(0xFF1E1B4B),
+                          foregroundColor: currentAnswer == 'yes'
+                              ? Colors.white
+                              : const Color(0xFF22C55E),
+                          minimumSize: const Size(0, 60),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: const BorderSide(color: Color(0xFF22C55E), width: 2),
+                          ),
+                          elevation: currentAnswer == 'yes' ? 8 : 0,
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.check, size: 28),
+                            SizedBox(width: 8),
+                            Text(
+                              'ДА',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuestionCard(P2PScenarioDetailed scenario, String? currentAnswer) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF6366F1), Color(0xFF3B82F6)],
               ),
-            ).animate(delay: 300.ms).fadeIn().scale(begin: const Offset(0.9, 0.9)),
-          ],
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Column(
+              children: [
+                Text(scenario.emoji, style: const TextStyle(fontSize: 48)),
+                const SizedBox(height: 8),
+                Text(
+                  scenario.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        scenario.skill,
+                        style: const TextStyle(fontSize: 11, color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        scenario.sphere,
+                        style: const TextStyle(fontSize: 11, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
 
-          const SizedBox(height: 24),
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF6366F1).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFF6366F1).withOpacity(0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Text(
+                    scenario.question,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF312E81),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  scenario.description,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.black87,
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
 
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _currentIndex = 0;
-                _likedScenarios.clear();
-              });
-            },
-            child: Text(
-              'Начать заново',
-              style: AppTextStyles.body.copyWith(
-                color: AppColors.primaryPurple,
-                fontWeight: FontWeight.w600,
+                // Yes/No Buttons
+                ElevatedButton(
+                  onPressed: () => _handleAnswer('yes'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: currentAnswer == 'yes'
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xFFDCFCE7),
+                    foregroundColor: currentAnswer == 'yes'
+                        ? Colors.white
+                        : const Color(0xFF166534),
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: currentAnswer == 'yes' ? 4 : 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.check,
+                        size: currentAnswer == 'yes' ? 24 : 20,
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'ДА, хочу попробовать',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => _handleAnswer('no'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: currentAnswer == 'no'
+                        ? const Color(0xFFEF4444)
+                        : const Color(0xFFFEE2E2),
+                    foregroundColor: currentAnswer == 'no'
+                        ? Colors.white
+                        : const Color(0xFF991B1B),
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: currentAnswer == 'no' ? 4 : 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.close,
+                        size: currentAnswer == 'no' ? 24 : 20,
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'НЕТ, не готов',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Navigation
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _currentCard == 0 ? null : _goBack,
+                        icon: const Icon(Icons.arrow_back, size: 16),
+                        label: const Text('Назад'),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          if (currentAnswer == null) {
+                            _handleAnswer('skip');
+                          } else if (_currentCard < _scenarios.length - 1) {
+                            setState(() {
+                              _currentCard++;
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.arrow_forward, size: 16),
+                        label: const Text('Далее'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6366F1),
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(0, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoleCard(String roleLabel, P2PRole role, Color color) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Text('🎭', style: TextStyle(fontSize: 20)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'РОЛЬ $roleLabel',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        role.name,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _showFullScenario = true;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Info
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: color.withOpacity(0.3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Text('📋', style: TextStyle(fontSize: 12)),
+                          SizedBox(width: 4),
+                          Text(
+                            'ЧТО ЗНАЕТ ПАРТНЁР:',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      ...role.info.map((item) => Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '•',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: color,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    item,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )).toList(),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                // Goal
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF22C55E).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xFF22C55E).withOpacity(0.3),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Text('🎯', style: TextStyle(fontSize: 12)),
+                          SizedBox(width: 4),
+                          Text(
+                            'ЦЕЛЬ:',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        role.goal,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                // Secrets
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _showFullScenario = true;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF4444).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: const Color(0xFFEF4444).withOpacity(0.3),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Text('🔒', style: TextStyle(fontSize: 12)),
+                            SizedBox(width: 4),
+                            Text(
+                              'СЕКРЕТЫ (не знает партнёр):',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        ...role.secrets.map((secret) => Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    '•',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color(0xFFEF4444),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      secret,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )).toList(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullScenarioView(P2PScenarioDetailed scenario) {
+    return Container(
+      color: Colors.white,
+      child: Column(
+        children: [
+          AppBar(
+            title: const Text('Полный сценарий'),
+            leading: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                setState(() {
+                  _showFullScenario = false;
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${scenario.emoji} ${scenario.title}',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildFullRoleDetails('РОЛЬ A', scenario.roleA),
+                  const SizedBox(height: 16),
+                  _buildFullRoleDetails('РОЛЬ B', scenario.roleB),
+                ],
               ),
             ),
           ),
@@ -484,22 +840,166 @@ class _P2PScreenState extends State<P2PScreen> {
     );
   }
 
-  String _getCategoryName(String category) {
-    switch (category) {
-      case 'career':
-        return 'Карьера';
-      case 'relationships':
-        return 'Отношения';
-      case 'conflict':
-        return 'Конфликт';
-      case 'emotional':
-        return 'Эмоции';
-      case 'social':
-        return 'Социум';
-      case 'cognitive':
-        return 'Мышление';
-      default:
-        return category;
-    }
+  Widget _buildFullRoleDetails(String title, P2PRole role) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              role.name,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Информация:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            ...role.info.map((item) => Padding(
+                  padding: const EdgeInsets.only(left: 8, top: 4),
+                  child: Text('• $item'),
+                )),
+            const SizedBox(height: 12),
+            const Text(
+              'Цель:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, top: 4),
+              child: Text(role.goal),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Секреты:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            ...role.secrets.map((secret) => Padding(
+                  padding: const EdgeInsets.only(left: 8, top: 4),
+                  child: Text('• $secret'),
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryView() {
+    final yesCount = _answers.values.where((a) => a == 'yes').length;
+    final noCount = _answers.values.where((a) => a == 'no').length;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            '✅',
+            style: TextStyle(fontSize: 80),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Твой выбор:',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 32),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.0,
+              ),
+              itemCount: _scenarios.length,
+              itemBuilder: (context, index) {
+                final scenario = _scenarios[index];
+                final answer = _answers[index];
+                return Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: answer == 'yes'
+                        ? const Color(0xFF22C55E).withOpacity(0.2)
+                        : answer == 'no'
+                            ? const Color(0xFFEF4444).withOpacity(0.2)
+                            : Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: answer == 'yes'
+                          ? const Color(0xFF22C55E)
+                          : answer == 'no'
+                              ? const Color(0xFFEF4444)
+                              : Colors.white.withOpacity(0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(scenario.emoji, style: const TextStyle(fontSize: 32)),
+                      const SizedBox(height: 8),
+                      Text(
+                        scenario.title,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        scenario.skill,
+                        style: const TextStyle(
+                          fontSize: 9,
+                          color: Colors.white70,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      if (answer != null) ...[
+                        const SizedBox(height: 8),
+                        Icon(
+                          answer == 'yes' ? Icons.check : Icons.close,
+                          color: answer == 'yes'
+                              ? const Color(0xFF22C55E)
+                              : const Color(0xFFEF4444),
+                          size: 20,
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Выбрано: $yesCount • Пропущено: $noCount',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -160,51 +160,55 @@ class AIScreen extends StatelessWidget {
     required ActivityModel activity,
     required int delay,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: AppDecorations.cardBackground,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              children: [
-                if (activity.emoji != null)
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      gradient: _getGradientForType(activity.type),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Text(
-                        activity.emoji!,
-                        style: const TextStyle(fontSize: 24),
+    return GestureDetector(
+      onTap: () {
+        _showDetailedAnalysis(context, activity);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: AppDecorations.cardBackground,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  if (activity.emoji != null)
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: _getGradientForType(activity.type),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          activity.emoji!,
+                          style: const TextStyle(fontSize: 24),
+                        ),
                       ),
                     ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          activity.title,
+                          style: AppTextStyles.h3,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          activity.timestamp,
+                          style: AppTextStyles.caption,
+                        ),
+                      ],
+                    ),
                   ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        activity.title,
-                        style: AppTextStyles.h3,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        activity.timestamp,
-                        style: AppTextStyles.caption,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
             const SizedBox(height: 12),
 
@@ -349,7 +353,8 @@ class AIScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     )

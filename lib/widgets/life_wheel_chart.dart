@@ -20,19 +20,18 @@ class LifeWheelChart extends StatelessWidget {
     final dx = localPosition.dx - center.dx;
     final dy = localPosition.dy - center.dy;
 
-    // Check if tap is in center circle (radius < 50)
+    // Check if tap is outside center circle (radius > 50)
     final distance = math.sqrt(dx * dx + dy * dy);
-    if (distance < 50) {
-      // Tapped center - show overall balance info
-      _showBalanceOverview(context);
-      return;
-    }
+    if (distance < 50) return;
 
-    // Calculate angle
+    // Calculate angle matching the drawing logic
     var angle = math.atan2(dy, dx);
-    // Adjust to start from top (-π/2)
-    angle = angle + math.pi / 2;
-    if (angle < 0) angle += 2 * math.pi;
+
+    // Normalize to match drawing: drawing starts at -π/2 and goes clockwise
+    // atan2 gives us angle from positive X axis, counter-clockwise
+    // We need to convert to angle from top (-π/2), going clockwise
+    angle = angle - (-math.pi / 2); // Shift reference point to top
+    if (angle < 0) angle += 2 * math.pi; // Normalize to 0-2π
 
     // Determine which sector was tapped
     final angleStep = (2 * math.pi) / balance.spheres.length;
@@ -50,193 +49,6 @@ class LifeWheelChart extends StatelessWidget {
         tappedSphere.value.toDouble(),
       );
     }
-  }
-
-  void _showBalanceOverview(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.75,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF1A1F3A), Color(0xFF0F1729)],
-          ),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.only(top: 12, bottom: 8),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Center(
-                      child: Text('⚖️', style: TextStyle(fontSize: 80)),
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: Text(
-                        'Колесо баланса',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Column(
-                                children: [
-                                  Text(
-                                    '${balance.averageBalance.toInt()}',
-                                    style: TextStyle(
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF6366F1),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Средний балл',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.white.withOpacity(0.6),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                width: 1,
-                                height: 50,
-                                color: Colors.white.withOpacity(0.1),
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    '${(balance.harmony * 100).toInt()}%',
-                                    style: TextStyle(
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF8B5CF6),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Гармония',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.white.withOpacity(0.6),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Все сферы жизни',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ...balance.spheres.map((sphere) => Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            sphere.sphere.emoji,
-                            style: const TextStyle(fontSize: 32),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  sphere.sphere.name,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(4),
-                                  child: LinearProgressIndicator(
-                                    value: sphere.value / 100,
-                                    minHeight: 6,
-                                    backgroundColor: Colors.white.withOpacity(0.1),
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      sphere.sphere.color,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            '${sphere.value.toInt()}',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: sphere.sphere.color,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -415,6 +227,7 @@ class _LifeWheelPainter extends CustomPainter {
 
       textPainter.paint(canvas, offset);
     }
+
   }
 
   @override

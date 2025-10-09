@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../models/metaskill_detailed.dart';
+import '../models/life_sphere.dart';
+import '../widgets/life_wheel_chart.dart';
+import '../widgets/profile_detail_modal.dart';
+import '../widgets/metaskills_radar_16.dart';
 import '../config/app_version.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -18,7 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -30,10 +34,17 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      body: SafeArea(
-        child: Column(
-          children: [
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.background, Color(0xFF1A1F3A)],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
             // Version badge (top-right)
             Align(
               alignment: Alignment.topRight,
@@ -73,32 +84,34 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   _buildOverviewTab(),
                   _buildSpheresTab(),
                   _buildSkillsTab(),
-                  _buildMoreTab(),
                 ],
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildMCodeCard() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        gradient: AppGradients.primaryGradient,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryPurple.withOpacity(0.3),
-            blurRadius: 12,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: Row(
+    return GestureDetector(
+      onTap: () => ProfileDetailModal.show(context),
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          gradient: AppGradients.primaryGradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryPurple.withOpacity(0.3),
+              blurRadius: 12,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Row(
         children: [
           // Compact icon
           Container(
@@ -149,6 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             ],
           ),
         ],
+        ),
       ),
     );
   }
@@ -245,27 +259,20 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   Widget _buildTabs() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardBackground,
         border: Border(
           bottom: BorderSide(
-            color: const Color(0xFFE5E7EB),
+            color: Colors.white.withOpacity(0.1),
             width: 1,
           ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
       ),
       child: TabBar(
         controller: _tabController,
-        indicatorColor: const Color(0xFF667EEA),
+        indicatorColor: AppColors.primaryPurple,
         indicatorWeight: 3,
-        labelColor: const Color(0xFF667EEA),
-        unselectedLabelColor: const Color(0xFF6B7280),
+        labelColor: AppColors.primaryPurple,
+        unselectedLabelColor: Colors.white.withOpacity(0.6),
         labelStyle: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
@@ -274,7 +281,6 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
           Tab(text: 'Overview'),
           Tab(text: 'Сферы'),
           Tab(text: 'Скилы'),
-          Tab(text: 'More'),
         ],
       ),
     );
@@ -283,233 +289,60 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   // OVERVIEW TAB
   Widget _buildOverviewTab() {
     return SingleChildScrollView(
-      child: Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '🎯 ЗАДАЧИ ЭТОЙ НЕДЕЛИ',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF667EEA),
-                letterSpacing: 1,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildTaskCard(
-              number: 1,
-              title: 'Попроси повышение или бонус',
-              description: 'Ты избегаешь разговоров о деньгах. Составь аргументы о своей ценности и назначь встречу с руководителем.',
-              testDone: true,
-              testScore: '45/100',
-              aiDone: true,
-              p2pDone: false,
-              nextStep: 'Следующий шаг: пройди P2P практику для прокачки',
-            ),
-            const SizedBox(height: 12),
-            _buildTaskCard(
-              number: 2,
-              title: 'Публичное выступление на 5 минут',
-              description: 'Запишись на митап или созвон команды. Подготовь короткий доклад о своём проекте и выступи перед коллегами.',
-              testDone: false,
-              aiDone: false,
-              p2pDone: false,
-              nextStep: 'Рекомендуем: начни с теста, чтобы понять свой уровень',
-            ),
-            const SizedBox(height: 12),
-            _buildTaskCard(
-              number: 3,
-              title: 'Делегируй одну задачу полностью ✅',
-              description: 'Выбери рутинную задачу, которую ты всегда делаешь сам. Передай её коллеге с чёткими инструкциями.',
-              testDone: true,
-              testScore: '73/100',
-              aiDone: true,
-              p2pDone: true,
-              p2pScore: '92%',
-              nextStep: '✅ Задача выполнена! Отличная работа!',
-              completed: true,
-            ),
-          ],
-        ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '🎯 ЗАДАЧИ ЭТОЙ НЕДЕЛИ',
+            style: AppTextStyles.h3.copyWith(color: AppColors.primaryPurple),
+          ),
+          const SizedBox(height: 16),
+          _buildSimpleTaskCard('📝 Пройти тест', '✅ Тест: 45/100', true),
+          const SizedBox(height: 12),
+          _buildSimpleTaskCard('🤖 Прочитать AI анализ', '✅ AI прочитано', true),
+          const SizedBox(height: 12),
+          _buildSimpleTaskCard('🎮 P2P практика', '○ P2P: не начато', false),
+        ],
       ),
     );
   }
 
-  Widget _buildTaskCard({
-    required int number,
-    required String title,
-    required String description,
-    required bool testDone,
-    String? testScore,
-    required bool aiDone,
-    required bool p2pDone,
-    String? p2pScore,
-    required String nextStep,
-    bool completed = false,
-  }) {
+  Widget _buildSimpleTaskCard(String title, String status, bool done) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFFF7ED), Color(0xFFFFEDD5)],
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: const Border(
-          left: BorderSide(color: Color(0xFFF59E0B), width: 4),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      decoration: AppDecorations.cardBackground,
+      child: Row(
         children: [
-          // Task number
-          Container(
-            width: 28,
-            height: 28,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF59E0B),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                '$number',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // Title
           Text(
-            title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF92400E),
-              height: 1.4,
-            ),
+            done ? '✅' : '○',
+            style: const TextStyle(fontSize: 24),
           ),
-          const SizedBox(height: 8),
-
-          // Description
-          Text(
-            description,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Color(0xFFB45309),
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Progress
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(10),
-            ),
+          const SizedBox(width: 12),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 8,
-                  children: [
-                    _buildProgressBadge(
-                      testDone ? '✅ Тест: ${testScore ?? 'готово'}' : '○ Тест: не пройден',
-                      testDone,
-                    ),
-                    _buildProgressBadge(
-                      aiDone ? '✅ AI прочитано' : '○ AI: не прочитано',
-                      aiDone,
-                    ),
-                    _buildProgressBadge(
-                      p2pDone ? '✅ P2P: ${p2pScore ?? 'готово'}' : '○ P2P: не начато',
-                      p2pDone,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
                 Text(
-                  '→ $nextStep',
-                  style: TextStyle(
-                    fontSize: 11,
+                  title,
+                  style: AppTextStyles.body.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: completed ? const Color(0xFF166534) : const Color(0xFF92400E),
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  status,
+                  style: AppTextStyles.caption.copyWith(
+                    color: done ? AppColors.success : AppColors.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
-
-          // Action buttons
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: completed ? const Color(0xFF22C55E) : const Color(0xFFF59E0B),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    completed ? '✅ Архивировать' : '🎮 Начать P2P',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF92400E),
-                    side: const BorderSide(color: Color(0xFFF59E0B), width: 2),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text(
-                    '🤖 AI',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          TextButton(
+            onPressed: () {},
+            child: const Text('Apply'),
           ),
         ],
       ),
@@ -538,21 +371,13 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   // SPHERES TAB
   Widget _buildSpheresTab() {
+    final lifeWheel = LifeWheelBalance.fromMockData();
+
     return SingleChildScrollView(
       child: Container(
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
+        decoration: AppDecorations.cardBackground,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -561,7 +386,32 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF667EEA),
+                color: AppColors.primaryPurple,
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Life Wheel Chart
+            Center(
+              child: LifeWheelChart(balance: lifeWheel, size: 320),
+            ),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatItem('Средний балл', '${lifeWheel.averageBalance.toInt()}'),
+                _buildStatItem('Гармония', '${(lifeWheel.harmony * 100).toInt()}%'),
+              ],
+            ),
+
+            const SizedBox(height: 32),
+            const Text(
+              '💪 ТРЕНИРОВАТЬ',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFFF59E0B),
                 letterSpacing: 1,
               ),
             ),
@@ -625,429 +475,230 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     required bool isWeak,
     required List<Map<String, dynamic>> problems,
   }) {
-    final bgColors = isWeak
-        ? [const Color(0xFFFEF2F2), const Color(0xFFFEE2E2)]
-        : [const Color(0xFFF0FDF4), const Color(0xFFDCFCE7)];
-    final borderColor = isWeak ? const Color(0xFFEF4444) : const Color(0xFF22C55E);
-    final nameColor = isWeak ? const Color(0xFF991B1B) : const Color(0xFF166534);
-    final scoreColor = isWeak ? const Color(0xFFDC2626) : const Color(0xFF16A34A);
-    final textColor = isWeak ? const Color(0xFF991B1B) : const Color(0xFF166534);
+    return Column(
+      children: problems.map((problem) {
+        // Remove emoji from problem text if it exists
+        String problemText = problem['text'] as String;
+        problemText = problemText.replaceFirst(RegExp(r'^[❌✅]\s*'), '');
 
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: bgColors,
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border(
-          left: BorderSide(color: borderColor, width: 4),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: AppDecorations.cardBackground,
+          child: Row(
             children: [
-              Text(
-                name,
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: nameColor,
+              GestureDetector(
+                onTap: () {
+                  // TODO: Mark as completed
+                },
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isWeak ? const Color(0xFFF59E0B) : AppColors.success,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: isWeak ? null : const Icon(Icons.check, size: 16, color: AppColors.success),
                 ),
               ),
-              Text(
-                '$score',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: scoreColor,
+              const SizedBox(width: 12),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    // TODO: Show problem details modal
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        problemText,
+                        style: AppTextStyles.body.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '$name • Балл: $score',
+                        style: AppTextStyles.caption.copyWith(
+                          color: isWeak ? const Color(0xFFF59E0B) : AppColors.success,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-
-          // Problems
-          ...problems.asMap().entries.map((entry) {
-            final index = entry.key;
-            final problem = entry.value;
-            final isLast = index == problems.length - 1;
-
-            return Container(
-              margin: EdgeInsets.only(bottom: isLast ? 0 : 16),
-              padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
-              decoration: BoxDecoration(
-                border: isLast
-                    ? null
-                    : Border(
-                        bottom: BorderSide(
-                          color: Colors.black.withOpacity(0.05),
-                          width: 1,
-                        ),
-                      ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    problem['text'] as String,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: textColor,
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 8,
-                    children: [
-                      _buildProgressBadge(
-                        problem['p2p'] as bool ? '✅ P2P: 87%' : '○ P2P',
-                        problem['p2p'] as bool,
-                      ),
-                      _buildProgressBadge(
-                        problem['ai'] as bool ? '✅ AI' : '○ AI',
-                        problem['ai'] as bool,
-                      ),
-                      _buildProgressBadge(
-                        problem['test'] as bool ? '✅ Тест' : '○ Тест',
-                        problem['test'] as bool,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: textColor,
-                        side: BorderSide(color: borderColor, width: 2),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        isWeak ? '🎯 Начать решать' : '🎮 Помоги другим',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-        ],
-      ),
+        );
+      }).toList(),
     );
   }
 
   // SKILLS TAB
   Widget _buildSkillsTab() {
     final skills = MetaskillDetailed.getAll16Skills();
+    final weakSkills = skills.where((s) => s.currentLevel < 60).take(3).toList();
 
     return SingleChildScrollView(
       child: Container(
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
+        decoration: AppDecorations.cardBackground,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '⚡ КАРТА НАВЫКОВ',
+              '⚡ 16 МЕТАСКИЛОВ',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF667EEA),
+                color: AppColors.primaryPurple,
                 letterSpacing: 1,
               ),
             ),
             const SizedBox(height: 24),
 
-            // Circular skills wheel
-            _buildSkillsWheel(skills),
+            // 16 Metaskills Radar
+            Center(
+              child: MetaskillsRadar16(
+                skills: skills,
+                size: 420,
+                onSkillTap: (skill) {
+                  // TODO: Open metaskill detail modal
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      backgroundColor: AppColors.cardBackground,
+                      title: Text(
+                        '${skill.emoji} ${skill.title}',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      content: Text(
+                        skill.description,
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Закрыть'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
 
             const SizedBox(height: 32),
 
-            // Skills to improve
+            // Weak skills list
             const Text(
-              '⚠️ ТРЕБУЮТ ПРОКАЧКИ',
+              '💪 ТРЕНИРОВАТЬ',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF667EEA),
+                color: Color(0xFFF59E0B),
                 letterSpacing: 1,
               ),
             ),
             const SizedBox(height: 16),
 
-            ...skills
-                .where((s) => s.currentLevel < 60)
-                .take(2)
-                .map((skill) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _buildSkillImproveCard(skill),
-                    ))
-                .toList(),
+            ...weakSkills.map((skill) => Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: AppDecorations.cardBackground,
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      // TODO: Mark as completed
+                    },
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFFF59E0B), width: 2),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        // TODO: Show metaskill details modal
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${skill.emoji} ${skill.title}',
+                            style: AppTextStyles.body.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Текущий балл: ${skill.currentLevel}',
+                            style: AppTextStyles.caption.copyWith(
+                              color: const Color(0xFFF59E0B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )).toList(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSkillsWheel(List<MetaskillDetailed> skills) {
-    return Center(
-      child: SizedBox(
-        width: 320,
-        height: 320,
-        child: Stack(
-          children: [
-            // Background circles
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: const Color(0xFFE0E7FF),
-                  width: 2,
-                ),
-              ),
-            ),
-            // Skill points
-            ...skills.take(12).toList().asMap().entries.map((entry) {
-              final index = entry.key;
-              final skill = entry.value;
-              final angle = (index * 30) * math.pi / 180;
-              final radius = 140.0;
-              final x = 160 + radius * math.cos(angle - math.pi / 2) - 32;
-              final y = 160 + radius * math.sin(angle - math.pi / 2) - 32;
 
-              return Positioned(
-                left: x,
-                top: y,
-                child: _buildSkillPoint(skill),
-              );
-            }).toList(),
-          ],
+  Widget _buildStatItem(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: AppTextStyles.h2.copyWith(fontSize: 24),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: AppTextStyles.caption,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDomainLabel(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: color,
+          width: 2,
+        ),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: color,
         ),
       ),
     );
   }
 
-  Widget _buildSkillPoint(MetaskillDetailed skill) {
-    final level = skill.currentLevel;
-    final color = level >= 75
-        ? const Color(0xFF22C55E)
-        : level >= 60
-            ? const Color(0xFFF59E0B)
-            : const Color(0xFFEF4444);
-    final textColor = level >= 75
-        ? const Color(0xFF166534)
-        : level >= 60
-            ? const Color(0xFF92400E)
-            : const Color(0xFF991B1B);
-
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: color, width: 3),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            skill.emoji,
-            style: const TextStyle(fontSize: 22),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            '$level',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-              color: textColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSkillImproveCard(MetaskillDetailed skill) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFEF2F2), Color(0xFFFEE2E2)],
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: const Border(
-          left: BorderSide(color: Color(0xFFEF4444), width: 4),
-        ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                skill.emoji,
-                style: const TextStyle(fontSize: 28),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  skill.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF991B1B),
-                  ),
-                ),
-              ),
-              Text(
-                '${skill.currentLevel}',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFFDC2626),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '❌ Требует развития',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF991B1B),
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 8,
-                  children: [
-                    _buildProgressBadge('○ P2P', false),
-                    _buildProgressBadge('○ AI', false),
-                    _buildProgressBadge('○ Тест', false),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF991B1B),
-                      side: const BorderSide(color: Color(0xFFEF4444), width: 2),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      '📝 Пройти тест',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // MORE TAB
-  Widget _buildMoreTab() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '⚙️ НАСТРОЙКИ',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF667EEA),
-              letterSpacing: 1,
-            ),
-          ),
-          const SizedBox(height: 40),
-          const Center(
-            child: Text(
-              'Настройки профиля, подписка, приватность',
-              style: TextStyle(
-                color: Color(0xFF6B7280),
-                height: 1.6,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
