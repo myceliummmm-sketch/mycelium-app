@@ -50,6 +50,9 @@ server/dist/
 server/.env
 .env
 
+# Sensitive keys and tokens (use .example version for reference)
+KEYS_AND_TOKENS.md
+
 # Deployment configs (temporary)
 render-service.json
 DEPLOYMENT_GUIDE.md
