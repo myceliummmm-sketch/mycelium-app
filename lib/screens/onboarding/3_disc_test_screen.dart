@@ -183,7 +183,7 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
           children: [
             // Хедер с прогрессом
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -209,7 +209,7 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   // Прогресс внутри теста
                   Text(
@@ -224,7 +224,9 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
                   // Заголовок
                   Text(
                     'DISC тест',
-                    style: AppTextStyles.h2,
+                    style: AppTextStyles.h2.copyWith(fontSize: 20),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -233,14 +235,16 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
             // Вопрос и ответы
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Вопрос
                     Text(
                       question.text,
-                      style: AppTextStyles.h3.copyWith(fontSize: 20),
+                      style: AppTextStyles.h3.copyWith(fontSize: 18),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ).animate(
                       key: ValueKey(_currentQuestion),
                     ).fadeIn(duration: 400.ms).slideX(
@@ -249,7 +253,7 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
                       duration: 400.ms,
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
 
                     // Ответы
                     Expanded(
@@ -289,7 +293,7 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
 
             // Подсказка
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(16.0),
               child: Text(
                 'Выбери наиболее подходящий вариант',
                 style: AppTextStyles.caption.copyWith(
@@ -365,7 +369,10 @@ class _AnswerCard extends StatelessWidget {
                 style: AppTextStyles.body.copyWith(
                   color: Colors.white,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  fontSize: 14,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             if (isSelected)

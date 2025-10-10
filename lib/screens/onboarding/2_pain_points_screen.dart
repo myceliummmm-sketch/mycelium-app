@@ -75,7 +75,7 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
           children: [
             // Хедер с прогрессом
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -101,23 +101,28 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
 
                   // Заголовок
                   Text(
                     'Что тебя беспокоит?',
-                    style: AppTextStyles.h1,
+                    style: AppTextStyles.h1.copyWith(fontSize: 26),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ).animate()
                     .fadeIn(duration: 400.ms)
                     .slideX(begin: -0.2, end: 0, duration: 400.ms),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
 
                   Text(
                     'Выбери от 1 до 3 болевых точек',
                     style: AppTextStyles.body.copyWith(
                       color: Colors.white60,
+                      fontSize: 13,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ).animate()
                     .fadeIn(delay: 200.ms, duration: 400.ms)
                     .slideX(begin: -0.2, end: 0, delay: 200.ms, duration: 400.ms),
@@ -128,7 +133,7 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
             // Список болевых точек
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: _painPoints.length,
                 itemBuilder: (context, index) {
                   final pain = _painPoints[index];
@@ -155,7 +160,7 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
 
             // Кнопка продолжить
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   // Счетчик выбранных

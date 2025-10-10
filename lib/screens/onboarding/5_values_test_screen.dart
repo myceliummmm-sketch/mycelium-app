@@ -87,7 +87,7 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
           children: [
             // Хедер с прогрессом
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -113,12 +113,14 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   // Заголовок
                   Text(
                     '🎯 Что хочешь прокачать в первую очередь?',
-                    style: AppTextStyles.h1.copyWith(fontSize: 24),
+                    style: AppTextStyles.h1.copyWith(fontSize: 22),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ).animate()
                     .fadeIn(duration: 400.ms)
                     .slideX(begin: -0.2, end: 0, duration: 400.ms),
@@ -129,8 +131,10 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
                     'Выбери 3 сферы для старта',
                     style: AppTextStyles.body.copyWith(
                       color: Colors.white60,
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ).animate()
                     .fadeIn(delay: 200.ms, duration: 400.ms)
                     .slideX(begin: -0.2, end: 0, delay: 200.ms, duration: 400.ms),
@@ -165,7 +169,7 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
             // Сферы жизни
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -192,7 +196,7 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
 
             // Кнопка завершения
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -283,6 +287,8 @@ class _SphereCard extends StatelessWidget {
                 fontSize: 14,
               ),
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 2),
             Text(

@@ -166,7 +166,7 @@ class _BigFiveTestScreenState extends State<BigFiveTestScreen> {
           children: [
             // Хедер с прогрессом
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -192,7 +192,7 @@ class _BigFiveTestScreenState extends State<BigFiveTestScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   // Прогресс внутри теста
                   Text(
@@ -207,7 +207,9 @@ class _BigFiveTestScreenState extends State<BigFiveTestScreen> {
                   // Заголовок
                   Text(
                     'Big Five тест',
-                    style: AppTextStyles.h2,
+                    style: AppTextStyles.h2.copyWith(fontSize: 20),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -216,14 +218,16 @@ class _BigFiveTestScreenState extends State<BigFiveTestScreen> {
             // Вопрос и ответы
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Вопрос
                     Text(
                       question.text,
-                      style: AppTextStyles.h3.copyWith(fontSize: 20),
+                      style: AppTextStyles.h3.copyWith(fontSize: 18),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ).animate(
                       key: ValueKey(_currentQuestion),
                     ).fadeIn(duration: 400.ms).slideX(
@@ -232,7 +236,7 @@ class _BigFiveTestScreenState extends State<BigFiveTestScreen> {
                       duration: 400.ms,
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
 
                     // Ответы
                     Expanded(
@@ -271,7 +275,7 @@ class _BigFiveTestScreenState extends State<BigFiveTestScreen> {
 
             // Подсказка
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(16.0),
               child: Text(
                 'Выбери наиболее подходящий вариант',
                 style: AppTextStyles.caption.copyWith(
@@ -348,7 +352,10 @@ class _AnswerCard extends StatelessWidget {
                 style: AppTextStyles.body.copyWith(
                   color: Colors.white,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  fontSize: 14,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             if (isSelected)
