@@ -114,7 +114,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
               // Сменяющиеся сообщения
               SizedBox(
-                height: 120,
+                height: 100,
                 child: Column(
                   children: List.generate(
                     _loadingMessages.length,
@@ -122,14 +122,17 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       duration: const Duration(milliseconds: 500),
                       opacity: _loadingStep >= index ? 1.0 : 0.3,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 2),
                         child: Text(
                           _loadingMessages[index],
                           style: AppTextStyles.body.copyWith(
                             color: _loadingStep >= index
                                 ? AppColors.success
                                 : Colors.white60,
+                            fontSize: 13,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -212,10 +215,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Ты прирожденный лидер с нестандартным мышлением.\nЛюбишь вызовы и быстрые решения. Рутина — твой враг.',
+                      'Ты прирожденный лидер с нестандартным мышлением. Любишь вызовы и быстрые решения.',
                       style: AppTextStyles.body.copyWith(
                         color: Colors.white70,
+                        fontSize: 14,
                       ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

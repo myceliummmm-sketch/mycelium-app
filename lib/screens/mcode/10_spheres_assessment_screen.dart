@@ -254,7 +254,7 @@ class _SpheresAssessmentNewScreenState
     final sliderColor = _getSliderColor(value);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
@@ -277,14 +277,19 @@ class _SpheresAssessmentNewScreenState
                   children: [
                     Text(
                       title,
-                      style: AppTextStyles.h3.copyWith(fontSize: 16),
+                      style: AppTextStyles.h3.copyWith(fontSize: 15),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: AppTextStyles.caption.copyWith(
                         color: Colors.white60,
+                        fontSize: 12,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

@@ -330,12 +330,17 @@ class _NewMCodeDashboardScreenState extends State<NewMCodeDashboardScreen> {
                           Text(
                             'ДЕНЬГИ',
                             style: AppTextStyles.h3.copyWith(fontSize: 16),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            '(оценка появится после задачи №4)',
+                            'оценка после задачи №4',
                             style: AppTextStyles.caption.copyWith(
                               color: Colors.white60,
+                              fontSize: 11,
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -350,9 +355,10 @@ class _NewMCodeDashboardScreenState extends State<NewMCodeDashboardScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        '✅ Разблокировано',
+                        '✅',
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.success,
+                          fontSize: 14,
                         ),
                       ),
                     ),
@@ -418,7 +424,7 @@ class _NewMCodeDashboardScreenState extends State<NewMCodeDashboardScreen> {
 
               // Подсказка
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.info.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -430,8 +436,8 @@ class _NewMCodeDashboardScreenState extends State<NewMCodeDashboardScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('💡', style: const TextStyle(fontSize: 20)),
-                    const SizedBox(width: 12),
+                    Text('💡', style: const TextStyle(fontSize: 18)),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,14 +446,20 @@ class _NewMCodeDashboardScreenState extends State<NewMCodeDashboardScreen> {
                             'Подсказка:',
                             style: AppTextStyles.body.copyWith(
                               fontWeight: FontWeight.w600,
+                              fontSize: 14,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Text(
-                            'Оцени каждую сферу жизни от 0 до 10\nЭто поможет построить твой профиль',
+                            'Оцени 8 сфер от 0 до 10',
                             style: AppTextStyles.caption.copyWith(
                               color: Colors.white70,
+                              fontSize: 12,
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
