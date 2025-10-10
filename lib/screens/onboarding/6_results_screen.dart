@@ -66,6 +66,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
   }
 
   Widget _buildLoadingScreen() {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -76,7 +78,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
               // Анимированный гриб
               Text(
                 '🍄',
-                style: const TextStyle(fontSize: 80),
+                style: TextStyle(fontSize: screenHeight * 0.1),
               )
                   .animate(
                     onPlay: (controller) => controller.repeat(),
@@ -95,26 +97,26 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     curve: Curves.easeInOut,
                   ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: screenHeight * 0.05),
 
               // Спиннер
               const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryPurple),
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: screenHeight * 0.05),
 
               // Заголовок
               Text(
                 '🔮 Анализирую твой профиль...',
-                style: AppTextStyles.h2.copyWith(fontSize: 20),
+                style: AppTextStyles.h2.copyWith(fontSize: screenHeight * 0.025),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: screenHeight * 0.02),
 
               // Сменяющиеся сообщения
               SizedBox(
-                height: 100,
+                height: screenHeight * 0.12,
                 child: Column(
                   children: List.generate(
                     _loadingMessages.length,
@@ -122,14 +124,14 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       duration: const Duration(milliseconds: 500),
                       opacity: _loadingStep >= index ? 1.0 : 0.3,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.002),
                         child: Text(
                           _loadingMessages[index],
                           style: AppTextStyles.body.copyWith(
                             color: _loadingStep >= index
                                 ? AppColors.success
                                 : Colors.white60,
-                            fontSize: 13,
+                            fontSize: screenHeight * 0.016,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -140,7 +142,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.025),
 
               // "Готово! Смотри ↓"
               if (_loadingStep >= 4)
@@ -148,6 +150,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   'Готово! Смотри ↓',
                   style: AppTextStyles.h3.copyWith(
                     color: AppColors.success,
+                    fontSize: screenHeight * 0.02,
                   ),
                 )
                     .animate()
@@ -161,18 +164,20 @@ class _ResultsScreenState extends State<ResultsScreen> {
   }
 
   Widget _buildResultsScreen() {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(screenHeight * 0.02),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Заголовок
               Text(
                 '🎉 Поздравляем! Ты теперь часть Mycelium!',
-                style: AppTextStyles.h1.copyWith(fontSize: 24),
+                style: AppTextStyles.h1.copyWith(fontSize: screenHeight * 0.03),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ).animate().fadeIn(duration: 600.ms).slideY(
@@ -181,23 +186,23 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     duration: 600.ms,
                   ),
 
-              const SizedBox(height: 8),
+              SizedBox(height: screenHeight * 0.01),
 
               Text(
                 'Твоя грибница начала расти.',
                 style: AppTextStyles.body.copyWith(
                   color: Colors.white60,
-                  fontSize: 13,
+                  fontSize: screenHeight * 0.016,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ).animate(delay: 200.ms).fadeIn(duration: 400.ms),
 
-              const SizedBox(height: 40),
+              SizedBox(height: screenHeight * 0.04),
 
               // Тип личности
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(screenHeight * 0.02),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -216,16 +221,16 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   children: [
                     Text(
                       '🎭 Твой тип: СТРАТЕГ-ВИЗИОНЕР',
-                      style: AppTextStyles.h2.copyWith(fontSize: 18),
+                      style: AppTextStyles.h2.copyWith(fontSize: screenHeight * 0.022),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: screenHeight * 0.02),
                     Text(
                       'Ты прирожденный лидер с нестандартным мышлением. Любишь вызовы и быстрые решения.',
                       style: AppTextStyles.body.copyWith(
                         color: Colors.white70,
-                        fontSize: 14,
+                        fontSize: screenHeight * 0.017,
                       ),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
@@ -237,57 +242,63 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   .fadeIn(duration: 600.ms)
                   .slideY(begin: 0.2, end: 0, duration: 600.ms),
 
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
 
               // Суперсилы
               Text(
                 '✨ СУПЕРСИЛЫ:',
-                style: AppTextStyles.h3.copyWith(fontSize: 16),
+                style: AppTextStyles.h3.copyWith(fontSize: screenHeight * 0.02),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ).animate(delay: 600.ms).fadeIn(duration: 400.ms),
 
-              const SizedBox(height: 16),
+              SizedBox(height: screenHeight * 0.015),
 
               _buildBulletPoint(
                 '⚡ Решительность в критических ситуациях',
                 800,
+                screenHeight,
               ),
               _buildBulletPoint(
                 '🎯 Видишь возможности где другие видят проблемы',
                 900,
+                screenHeight,
               ),
               _buildBulletPoint(
                 '🚀 Не боишься рисковать и пробовать новое',
                 1000,
+                screenHeight,
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
 
               // Вызовы
               Text(
                 '⚠️ ВЫЗОВЫ:',
-                style: AppTextStyles.h3.copyWith(fontSize: 16),
+                style: AppTextStyles.h3.copyWith(fontSize: screenHeight * 0.02),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ).animate(delay: 1100.ms).fadeIn(duration: 400.ms),
 
-              const SizedBox(height: 16),
+              SizedBox(height: screenHeight * 0.015),
 
               _buildBulletPoint(
                 '- Нетерпелив к медленным людям',
                 1200,
+                screenHeight,
               ),
               _buildBulletPoint(
                 '- Можешь задавить других своей энергией',
                 1300,
+                screenHeight,
               ),
               _buildBulletPoint(
                 '- Детали и рутина вызывают скуку',
                 1400,
+                screenHeight,
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: screenHeight * 0.04),
 
               // Разделитель
               Divider(
@@ -295,70 +306,73 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 thickness: 1,
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: screenHeight * 0.04),
 
               // Что дальше
               Text(
                 '💡 ЧТО ДАЛЬШЕ?',
-                style: AppTextStyles.h2.copyWith(fontSize: 18),
+                style: AppTextStyles.h2.copyWith(fontSize: screenHeight * 0.022),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ).animate(delay: 1500.ms).fadeIn(duration: 400.ms),
 
-              const SizedBox(height: 12),
+              SizedBox(height: screenHeight * 0.015),
 
               Text(
                 'Сейчас попадешь в mCode — твою базу роста.',
                 style: AppTextStyles.body.copyWith(
                   color: Colors.white70,
-                  fontSize: 13,
+                  fontSize: screenHeight * 0.016,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ).animate(delay: 1600.ms).fadeIn(duration: 400.ms),
 
-              const SizedBox(height: 16),
+              SizedBox(height: screenHeight * 0.02),
 
               Text(
                 'Там тебя ждет:',
                 style: AppTextStyles.body.copyWith(
                   color: Colors.white70,
-                  fontSize: 13,
+                  fontSize: screenHeight * 0.016,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ).animate(delay: 1700.ms).fadeIn(duration: 400.ms),
 
-              const SizedBox(height: 12),
+              SizedBox(height: screenHeight * 0.012),
 
               _buildBulletPoint(
                 '🎯 Персональный план развития',
                 1800,
+                screenHeight,
               ),
               _buildBulletPoint(
                 '🎮 Живые тренировки с людьми (с 5 уровня)',
                 1900,
+                screenHeight,
               ),
               _buildBulletPoint(
                 '🏆 Система прогресса и наград',
                 2000,
+                screenHeight,
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
 
               Text(
                 'Ты готов начать путь в Mycelium?',
-                style: AppTextStyles.h3.copyWith(fontSize: 15),
+                style: AppTextStyles.h3.copyWith(fontSize: screenHeight * 0.019),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ).animate(delay: 2100.ms).fadeIn(duration: 400.ms),
 
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
 
               // Кнопка
               SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: screenHeight * 0.065,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
@@ -394,7 +408,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   .fadeIn(duration: 600.ms)
                   .slideY(begin: 0.3, end: 0, duration: 600.ms),
 
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
             ],
           ),
         ),
@@ -402,14 +416,14 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 
-  Widget _buildBulletPoint(String text, int delayMs) {
+  Widget _buildBulletPoint(String text, int delayMs, double screenHeight) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: screenHeight * 0.01),
       child: Text(
         text,
         style: AppTextStyles.body.copyWith(
           color: Colors.white70,
-          fontSize: 13,
+          fontSize: screenHeight * 0.016,
         ),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,

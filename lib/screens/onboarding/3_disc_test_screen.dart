@@ -166,6 +166,7 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     final question = _questions[_currentQuestion];
 
     return Scaffold(
@@ -183,7 +184,7 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
           children: [
             // Хедер с прогрессом
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenHeight * 0.02),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -209,22 +210,23 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: screenHeight * 0.015),
 
                   // Прогресс внутри теста
                   Text(
                     'Вопрос ${_currentQuestion + 1} из ${_questions.length}',
                     style: AppTextStyles.caption.copyWith(
                       color: AppColors.primaryPurple,
+                      fontSize: screenHeight * 0.015,
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: screenHeight * 0.015),
 
                   // Заголовок
                   Text(
                     'DISC тест',
-                    style: AppTextStyles.h2.copyWith(fontSize: 20),
+                    style: AppTextStyles.h2.copyWith(fontSize: screenHeight * 0.025),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -235,14 +237,14 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
             // Вопрос и ответы
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: screenHeight * 0.02),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Вопрос
                     Text(
                       question.text,
-                      style: AppTextStyles.h3.copyWith(fontSize: 18),
+                      style: AppTextStyles.h3.copyWith(fontSize: screenHeight * 0.022),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ).animate(
@@ -253,7 +255,7 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
                       duration: 400.ms,
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: screenHeight * 0.02),
 
                     // Ответы
                     Expanded(
@@ -265,12 +267,13 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
                           final isSelected = _selectedAnswerType == answer.type;
 
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
+                            padding: EdgeInsets.only(bottom: screenHeight * 0.012),
                             child: _AnswerCard(
                               answer: answer,
                               onTap: () => _selectAnswer(answer),
                               disabled: _isTransitioning,
                               isSelected: isSelected,
+                              screenHeight: screenHeight,
                             ).animate(
                               key: ValueKey('${_currentQuestion}_$index'),
                             ).fadeIn(
@@ -293,11 +296,12 @@ class _DiscTestScreenState extends State<DiscTestScreen> {
 
             // Подсказка
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenHeight * 0.015),
               child: Text(
                 'Выбери наиболее подходящий вариант',
                 style: AppTextStyles.caption.copyWith(
                   color: Colors.white60,
+                  fontSize: screenHeight * 0.015,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -328,12 +332,14 @@ class _AnswerCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool disabled;
   final bool isSelected;
+  final double screenHeight;
 
   const _AnswerCard({
     required this.answer,
     required this.onTap,
     required this.disabled,
     required this.isSelected,
+    required this.screenHeight,
   });
 
   @override
@@ -342,7 +348,7 @@ class _AnswerCard extends StatelessWidget {
       onTap: disabled ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(screenHeight * 0.02),
         decoration: BoxDecoration(
           gradient: isSelected ? AppGradients.primaryGradient : null,
           color: isSelected ? null : Colors.white.withOpacity(0.05),
@@ -369,17 +375,17 @@ class _AnswerCard extends StatelessWidget {
                 style: AppTextStyles.body.copyWith(
                   color: Colors.white,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  fontSize: 14,
+                  fontSize: screenHeight * 0.017,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check_circle,
                 color: Colors.white,
-                size: 24,
+                size: screenHeight * 0.03,
               ),
           ],
         ),

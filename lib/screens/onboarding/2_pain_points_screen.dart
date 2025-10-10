@@ -60,6 +60,8 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -75,7 +77,7 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
           children: [
             // Хедер с прогрессом
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenHeight * 0.02),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -101,25 +103,25 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: screenHeight * 0.02),
 
                   // Заголовок
                   Text(
                     'Что тебя беспокоит?',
-                    style: AppTextStyles.h1.copyWith(fontSize: 26),
+                    style: AppTextStyles.h1.copyWith(fontSize: screenHeight * 0.032),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ).animate()
                     .fadeIn(duration: 400.ms)
                     .slideX(begin: -0.2, end: 0, duration: 400.ms),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: screenHeight * 0.01),
 
                   Text(
                     'Выбери от 1 до 3 болевых точек',
                     style: AppTextStyles.body.copyWith(
                       color: Colors.white60,
-                      fontSize: 13,
+                      fontSize: screenHeight * 0.016,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -133,18 +135,19 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
             // Список болевых точек
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: screenHeight * 0.02),
                 itemCount: _painPoints.length,
                 itemBuilder: (context, index) {
                   final pain = _painPoints[index];
                   final isSelected = _selectedPains.contains(pain.text);
 
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: EdgeInsets.only(bottom: screenHeight * 0.012),
                     child: _PainCard(
                       pain: pain,
                       isSelected: isSelected,
                       onTap: () => _togglePain(pain.text),
+                      screenHeight: screenHeight,
                     ).animate()
                       .fadeIn(delay: (300 + index * 50).ms, duration: 400.ms)
                       .slideX(
@@ -160,17 +163,18 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
 
             // Кнопка продолжить
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenHeight * 0.02),
               child: Column(
                 children: [
                   // Счетчик выбранных
                   if (_selectedPains.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
+                      padding: EdgeInsets.only(bottom: screenHeight * 0.015),
                       child: Text(
                         'Выбрано: ${_selectedPains.length}/3',
                         style: AppTextStyles.body.copyWith(
                           color: AppColors.primaryPurple,
+                          fontSize: screenHeight * 0.018,
                         ),
                       ).animate()
                         .fadeIn(duration: 200.ms)
@@ -179,7 +183,7 @@ class _PainPointsScreenState extends State<PainPointsScreen> {
 
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: screenHeight * 0.065,
                     child: ElevatedButton(
                       onPressed: _continue,
                       style: ElevatedButton.styleFrom(
@@ -221,11 +225,13 @@ class _PainCard extends StatelessWidget {
   final PainPoint pain;
   final bool isSelected;
   final VoidCallback onTap;
+  final double screenHeight;
 
   const _PainCard({
     required this.pain,
     required this.isSelected,
     required this.onTap,
+    required this.screenHeight,
   });
 
   @override
@@ -234,7 +240,7 @@ class _PainCard extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(screenHeight * 0.02),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primaryPurple.withOpacity(0.2)
@@ -252,9 +258,9 @@ class _PainCard extends StatelessWidget {
             // Emoji
             Text(
               pain.emoji,
-              style: const TextStyle(fontSize: 32),
+              style: TextStyle(fontSize: screenHeight * 0.038),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: screenHeight * 0.02),
 
             // Текст
             Expanded(
@@ -263,6 +269,7 @@ class _PainCard extends StatelessWidget {
                 style: AppTextStyles.body.copyWith(
                   color: Colors.white,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  fontSize: screenHeight * 0.018,
                 ),
               ),
             ),
@@ -270,8 +277,8 @@ class _PainCard extends StatelessWidget {
             // Чекбокс
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 24,
-              height: 24,
+              width: screenHeight * 0.03,
+              height: screenHeight * 0.03,
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primaryPurple : Colors.transparent,
                 shape: BoxShape.circle,
@@ -281,9 +288,9 @@ class _PainCard extends StatelessWidget {
                 ),
               ),
               child: isSelected
-                  ? const Icon(
+                  ? Icon(
                       Icons.check,
-                      size: 16,
+                      size: screenHeight * 0.02,
                       color: Colors.white,
                     )
                   : null,

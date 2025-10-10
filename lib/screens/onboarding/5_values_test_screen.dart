@@ -72,6 +72,8 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -87,7 +89,7 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
           children: [
             // Хедер с прогрессом
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenHeight * 0.02),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -113,25 +115,25 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: screenHeight * 0.015),
 
                   // Заголовок
                   Text(
                     '🎯 Что хочешь прокачать в первую очередь?',
-                    style: AppTextStyles.h1.copyWith(fontSize: 22),
+                    style: AppTextStyles.h1.copyWith(fontSize: screenHeight * 0.027),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ).animate()
                     .fadeIn(duration: 400.ms)
                     .slideX(begin: -0.2, end: 0, duration: 400.ms),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: screenHeight * 0.01),
 
                   Text(
                     'Выбери 3 сферы для старта',
                     style: AppTextStyles.body.copyWith(
                       color: Colors.white60,
-                      fontSize: 13,
+                      fontSize: screenHeight * 0.016,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -139,7 +141,7 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
                     .fadeIn(delay: 200.ms, duration: 400.ms)
                     .slideX(begin: -0.2, end: 0, delay: 200.ms, duration: 400.ms),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: screenHeight * 0.012),
 
                   // Индикатор выбранных
                   Row(
@@ -169,12 +171,12 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
             // Сферы жизни
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: screenHeight * 0.02),
                 child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+                    crossAxisSpacing: screenHeight * 0.012,
+                    mainAxisSpacing: screenHeight * 0.012,
                     childAspectRatio: 1.1,
                   ),
                   itemCount: _spheres.length,
@@ -186,6 +188,7 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
                       sphere: sphere,
                       isSelected: isSelected,
                       onTap: () => _toggleProblem(sphere.problem),
+                      screenHeight: screenHeight,
                     ).animate()
                       .fadeIn(delay: (index * 50).ms, duration: 400.ms)
                       .scale(delay: (index * 50).ms, duration: 400.ms);
@@ -196,10 +199,10 @@ class _ValuesTestScreenState extends State<ValuesTestScreen> {
 
             // Кнопка завершения
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenHeight * 0.02),
               child: SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: screenHeight * 0.065,
                 child: ElevatedButton(
                   onPressed: _complete,
                   style: ElevatedButton.styleFrom(
@@ -245,11 +248,13 @@ class _SphereCard extends StatelessWidget {
   final SphereItem sphere;
   final bool isSelected;
   final VoidCallback onTap;
+  final double screenHeight;
 
   const _SphereCard({
     required this.sphere,
     required this.isSelected,
     required this.onTap,
+    required this.screenHeight,
   });
 
   @override
@@ -258,7 +263,7 @@ class _SphereCard extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(screenHeight * 0.012),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primaryPurple.withOpacity(0.2)
@@ -276,26 +281,26 @@ class _SphereCard extends StatelessWidget {
           children: [
             Text(
               sphere.emoji,
-              style: const TextStyle(fontSize: 28),
+              style: TextStyle(fontSize: screenHeight * 0.032),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: screenHeight * 0.006),
             Text(
               sphere.name,
               style: AppTextStyles.body.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
-                fontSize: 14,
+                fontSize: screenHeight * 0.017,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 2),
+            SizedBox(height: screenHeight * 0.002),
             Text(
               sphere.problem,
               style: AppTextStyles.caption.copyWith(
                 color: Colors.white60,
-                fontSize: 11,
+                fontSize: screenHeight * 0.013,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
