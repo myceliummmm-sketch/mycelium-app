@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import '../theme/app_theme.dart';
-import '../widgets/bottom_navigation.dart';
+import 'onboarding/2_pain_points_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -81,7 +81,7 @@ class OnboardingScreen extends StatelessWidget {
   void _onIntroEnd(BuildContext context) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => const MainNavigator(),
+        builder: (_) => const PainPointsScreen(),
       ),
     );
   }

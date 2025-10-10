@@ -5,6 +5,10 @@ class AppColors {
   static const Color background = Color(0xFF0A0E27);
   static const Color primaryPurple = Color(0xFF6B46C1);
   static const Color primaryBlue = Color(0xFF2563EB);
+  static const Color accentBlue = Color(0xFF3B82F6);
+  static const Color accent = Color(0xFF8B5CF6);
+  static const Color accentOrange = Color(0xFFF59E0B);
+  static const Color surface = Color(0xFF1A1F3A);
 
   // Text colors
   static const Color textPrimary = Color(0xFFFFFFFF);
@@ -13,6 +17,8 @@ class AppColors {
   // Status colors
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
+  static const Color error = Color(0xFFEF4444);
+  static const Color info = Color(0xFF3B82F6);
 
   // Additional colors
   static const Color cardBackground = Color(0xFF1A1F3A);

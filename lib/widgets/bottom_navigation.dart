@@ -6,6 +6,7 @@ import '../screens/p2p_screen.dart';
 import '../screens/ai_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/community_screen.dart';
+import '../screens/mcode/new_mcode_dashboard_screen.dart';
 
 class MainNavigator extends StatefulWidget {
   const MainNavigator({super.key});
@@ -18,7 +19,7 @@ class _MainNavigatorState extends State<MainNavigator> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = const [
-    ProfileScreen(), // mCode вместо Home
+    NewMCodeDashboardScreen(), // Новый mCode Dashboard
     TestsScreen(),
     P2PScreen(),
     AIScreen(),
