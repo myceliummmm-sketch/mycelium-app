@@ -216,11 +216,11 @@ class _NewMCodeDashboardScreenState extends State<NewMCodeDashboardScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              _buildProfileRow('• Openness:', 'High', indent: true),
-              _buildProfileRow('• Conscientiousness:', 'Medium', indent: true),
-              _buildProfileRow('• Extraversion:', 'High', indent: true),
-              _buildProfileRow('• Agreeableness:', 'Low', indent: true),
-              _buildProfileRow('• Neuroticism:', 'Low', indent: true),
+              _buildProfileRow('• Открытость:', 'High', indent: true),
+              _buildProfileRow('• Добросовестность:', 'Medium', indent: true),
+              _buildProfileRow('• Экстраверсия:', 'High', indent: true),
+              _buildProfileRow('• Доброжелательность:', 'Low', indent: true),
+              _buildProfileRow('• Нейротизм:', 'Low', indent: true),
 
               const SizedBox(height: 12),
               Text(
@@ -331,15 +331,6 @@ class _NewMCodeDashboardScreenState extends State<NewMCodeDashboardScreen> {
                             'ДЕНЬГИ',
                             style: AppTextStyles.h3.copyWith(fontSize: 16),
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            'оценка после задачи №4',
-                            style: AppTextStyles.caption.copyWith(
-                              color: Colors.white60,
-                              fontSize: 11,
-                            ),
-                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],

@@ -295,17 +295,6 @@ class _SphereCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: screenHeight * 0.002),
-            Text(
-              sphere.problem,
-              style: AppTextStyles.caption.copyWith(
-                color: Colors.white60,
-                fontSize: screenHeight * 0.013,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
           ],
         ),
       ),

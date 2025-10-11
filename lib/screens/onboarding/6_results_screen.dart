@@ -189,7 +189,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
               SizedBox(height: screenHeight * 0.01),
 
               Text(
-                'Твоя грибница начала расти.',
+                'Ты стал частью грибницы.',
                 style: AppTextStyles.body.copyWith(
                   color: Colors.white60,
                   fontSize: screenHeight * 0.016,
@@ -227,12 +227,12 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     ),
                     SizedBox(height: screenHeight * 0.02),
                     Text(
-                      'Ты прирожденный лидер с нестандартным мышлением. Любишь вызовы и быстрые решения.',
+                      'Прирожденный лидер с нестандартным мышлением.',
                       style: AppTextStyles.body.copyWith(
                         color: Colors.white70,
                         fontSize: screenHeight * 0.017,
                       ),
-                      maxLines: 3,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -328,33 +328,21 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 overflow: TextOverflow.ellipsis,
               ).animate(delay: 1600.ms).fadeIn(duration: 400.ms),
 
-              SizedBox(height: screenHeight * 0.02),
-
-              Text(
-                'Там тебя ждет:',
-                style: AppTextStyles.body.copyWith(
-                  color: Colors.white70,
-                  fontSize: screenHeight * 0.016,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ).animate(delay: 1700.ms).fadeIn(duration: 400.ms),
-
-              SizedBox(height: screenHeight * 0.012),
+              SizedBox(height: screenHeight * 0.015),
 
               _buildBulletPoint(
                 '🎯 Персональный план развития',
+                1700,
+                screenHeight,
+              ),
+              _buildBulletPoint(
+                '🎮 P2P тренировки (с 5 уровня)',
                 1800,
                 screenHeight,
               ),
               _buildBulletPoint(
-                '🎮 Живые тренировки с людьми (с 5 уровня)',
+                '🏆 Система прогресса',
                 1900,
-                screenHeight,
-              ),
-              _buildBulletPoint(
-                '🏆 Система прогресса и наград',
-                2000,
                 screenHeight,
               ),
 

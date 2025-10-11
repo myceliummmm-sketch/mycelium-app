@@ -141,13 +141,6 @@ class _SpheresAssessmentNewScreenState
                       color: Colors.white60,
                     ),
                   ).animate(delay: 200.ms).fadeIn(duration: 400.ms),
-                  const SizedBox(height: 8),
-                  Text(
-                    '0 = провал, 10 = всё супер',
-                    style: AppTextStyles.caption.copyWith(
-                      color: Colors.white60,
-                    ),
-                  ).animate(delay: 300.ms).fadeIn(duration: 400.ms),
                 ],
               ),
             ),
